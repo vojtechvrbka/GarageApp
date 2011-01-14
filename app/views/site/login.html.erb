@@ -1,0 +1,14 @@
+
+<form id="login-form" action="/customer/login" method="POST">
+  <div class="page visible">
+    <table>
+    <tr><td><label for="login_email"><%='váš email:'%></label></td>
+      <td><input id="login_email" name="email" type="text" class="input_text" value=""/></td></tr>
+    <tr><td><label for="login_pass">heslo:</label></td>
+      <td><input id="login_pass" name="password" type="password" class="input_password" value=""/></td>
+    </tr></table>
+  </div>
+  <div id="login-buttons" class="buttons">
+    <button onclick="login(); return false"><%='Přihlásit &raquo;'%></button>
+  </div>
+</form>

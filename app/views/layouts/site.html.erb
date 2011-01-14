@@ -1,0 +1,108 @@
+<%
+import java.util.*
+%>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta name="robots" content="all,follow" />
+
+    <meta name="author" lang="en" content="All: Your name [www.url.com]; e-mail: info@url.com" />
+    <meta name="copyright" lang="en" content="Webdesign: Nuvio [www.nuvio.cz]; e-mail: ahoj@nuvio.cz" />
+
+    <meta name="description" content="..." />
+    <meta name="keywords" content="..." />
+
+    <link rel="stylesheet" media="screen,projection" type="text/css" href="/stylesheets/reset.css" />
+    <link rel="stylesheet" media="screen,projection" type="text/css" href="/stylesheets/main.css" />
+    <!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="/css/main-msie.css" /><![endif]-->
+    <link rel="stylesheet" media="screen,projection" type="text/css" href="/stylesheets/style.css" />
+    <link rel="stylesheet" media="print" type="text/css" href="/stylesheets/print.css" />
+		
+	  <%= javascript_include_tag "jquery" %>
+	  <%= javascript_include_tag "jquery.validate" %>
+	  <%= javascript_include_tag "buy" %>
+
+    <title><%= page_title != null ? page_title+' | ' : '' %>Motocash</title>
+</head>
+
+<body>
+
+<div id="main">
+
+    <!-- Header -->
+    <div id="header">
+
+        <h1 id="logo"><a href="/" title="[Go to homepage]"><img src="/images/logo.png" /></a></h1>
+        <hr class="noscreen" />
+
+        <!-- Navigation -->
+        <div id="nav">
+    <!--      
+ <a href="#" id="nav-active">Homepage</a> <span>|</span>
+  
+            <a href="#">About us</a> <span>|</span>
+            <a href="#">Support</a> <span>|</span>
+            <a href="#">Contact</a>
+-->
+ 						<%= userline %>
+        </div> <!-- /nav -->
+
+    </div> <!-- /header -->
+    
+    <!-- Tray -->
+    <div id="tray">
+
+        <ul>
+            <li id="tray-active"><a href="/">Homepage</a></li> <!-- Active page -->
+     
+						<li><a href="/vehicle">My vehicles</a></li>
+			      <li><a href="/vehicle">Listing vehicles</a></li>
+						<li><a href="/vehicle">My account</a></li>
+        </ul>
+        
+        <!-- Search -->
+        <div id="search" class="box">
+            <form action="#" method="get">
+                <div class="box">
+                    <div id="search-input"><span class="noscreen">Search:</span><input type="text" size="30" name="" value="Search" /></div>
+                    <div id="search-submit"><input type="image" src="/design/search-submit.gif" value="OK" /></div>
+                </div>
+            </form>
+        </div> <!-- /search -->
+
+    <hr class="noscreen" />
+    </div> <!-- /tray -->
+
+    <!-- Promo -->
+    <div id="col-top"></div>
+    <div id="col" class="box">
+    
+				<%= @page_content %> 
+    </div> <!-- /col -->
+    <div id="col-bottom"></div>
+    
+
+    <hr class="noscreen" />
+
+    <!-- Footer -->
+    <div id="footer">
+
+        <!-- Do you want remove this backlinks? Look at www.nuviotemplates.com/payment.php -->
+        <p class="f-right"><a href="http://www.nuviotemplates.com/">Free web templates</a> presented by <a href="http://www.qartin.cz/">QARTIN</a> &ndash; Our tip: <a href="http://last-minute.invia.pl">Wakacje</a> <a href="http://dovolenka.invia.sk">Dovolenka</a></p>
+        <!-- Do you want remove this backlinks? Look at www.nuviotemplates.com/payment.php -->
+
+        <p>Copyright &copy;&nbsp;2008 <strong><a href="#">Your Name</a></strong>, All Rights Reserved &reg;</p>
+
+    </div> <!-- /footer -->
+
+</div> <!-- /main -->
+<div id="overlay" class="hidden"></div>
+  <div style="clear:both"></div>
+<script>init_data({<%= json %>})</script>
+</body>
+</html>
+
+

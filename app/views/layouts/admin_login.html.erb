@@ -1,0 +1,21 @@
+<%
+import java.util.*
+%><!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" /> 
+  <title><%= @page_title %></title>
+  <title>Kyle</title>
+</head>
+<body>
+  <br><br><br>
+<center>
+<%= 
+    url = UserServiceFactory.
+          getUserService().
+          createLoginURL(request.getRequestURI)
+  '<a href="'+url+'" class="login" ><img width="100px" src="/images/Kyle.png" ></a>'
+%>
+</center>
+
+</body>
+</html>

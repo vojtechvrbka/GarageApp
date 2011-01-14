@@ -1,0 +1,139 @@
+html, body {
+  padding:0;
+  margin:0;
+}
+
+body, form, input, select, pre, ul, ol, li,
+h1, h2, h3, h4, h5, h6, img,
+table, tr, td, th {
+ 	font-family: Arial, Helvetica, Verdana, Sans-serif;
+	padding: 0;
+	margin: 0;
+}
+
+a,
+a:link,
+a:hover,
+a:visited {
+  color:blue;
+  text-decoration:none;
+}
+
+html { height: 100%; }
+body { min-height: 100%; }
+
+html {
+  background:url('../images/background.png');
+}
+
+body {
+  position:relative;
+}
+
+.menu {
+  display:block;
+  margin:0;
+  padding:0;
+}
+
+.menu li{
+  display:block;
+  float:left;
+  margin:0;
+  padding:5px 15px 5px 15px;
+  margin:0 10px 0 0;
+  background:white;
+}
+
+#header {
+  width:960px;
+  margin-left:auto;
+  margin-right:auto;
+  height:100px;
+  z-index:100;
+}
+
+
+.hidden {
+  display:none;
+}
+.visible {
+  display:block;
+}
+
+
+#content_wrap {
+  clear:both;
+  width:960px;
+  margin:0 auto;
+  background:white;
+  postion:relative;
+}
+#content {
+  padding:10px;
+  
+}
+
+
+/* forms */
+
+form {
+  display:block;
+}
+form dl {
+  display:block;
+  width:700px;
+  clear:left;
+}
+
+form dt {
+  float:left;
+  width:150px;
+  display:block;
+}
+form dd {
+  float:left;
+  width:250px;
+  display:block;
+}
+
+table.visible {
+  display:table;
+}
+
+.buttons {
+  margin-bottom:0.5em;  
+}
+
+
+#header a img {
+  border:none;
+}
+#userline {
+  float:right;
+  
+}
+
+/* ----------------------------------------------------------------------------- */
+
+.button {
+  background:blue;
+  color:white !important;
+  text-decoration:none;
+  padding:0.2em 0.6em;
+  border-radius:2px;
+  -webkit-box-shadow:0 0 2px rgba(0,0,0, 0.35);
+  background-image:-webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0, rgb(53,4,214)),
+      color-stop(1, rgb(0,85,255))
+  );
+  background-image:-moz-linear-gradient(
+      center bottom,
+      rgb(55,0,237) 0%,
+      rgb(0,85,255) 100%
+  );
+}
+
