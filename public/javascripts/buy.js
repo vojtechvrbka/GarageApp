@@ -128,9 +128,9 @@ window.init_data = function(data) {
     //alert(e.data);
   });
   
-  on('set_customer', function(e) {
+  on('set_user', function(e) {
     //console.log(e);
-    main.data.customer = e.data;
+    main.data.user = e.data;
     $('logged_in_email').innerHTML = e.data.email;
   });
   
@@ -185,9 +185,9 @@ window.init_data = function(data) {
     select_buy_page(0);
     $('buy_offer_id').value = main.data.offer.id;
     
-    hide_if($("hide_if_logged_in"), !!main.data.customer);
+    hide_if($("hide_if_logged_in"), !!main.data.user);
     
-    if (main.data.customer) {
+    if (main.data.user) {
       $('buy-pieces').focus();
     } else {
       $('buy_name').focus();
@@ -261,7 +261,7 @@ window.init_data = function(data) {
   window.login = function() {
     j.ajax({
       type: 'POST',
-      url: '/customer/login?ajax=true',
+      url: '/user/login?ajax=true',
       data : j('#login-form').serialize(),
       success: server_event
     });
@@ -273,17 +273,17 @@ window.init_data = function(data) {
     hide($('overlay'));
     hide($('login-dialog'));
     //$('logged_in_email').innerHTML = $('login_email').value;
-    //main.data.customer = {}; //logged in  
+    //main.data.user = {}; //logged in  
   });
   
   window.logout = function() {
     j.ajax({
       type: 'POST',
-      url: '/customer/logout?ajax=true',
+      url: '/user/logout?ajax=true',
       success: function(a, b, result) {
         hide($('logged_in'));
         show($('logged_out'));
-        main.data.customer = null; //logged out
+        main.data.user = null; //logged out
       }
     });
   };
@@ -299,7 +299,7 @@ window.init_data = function(data) {
   window.register = function() {
     j.ajax({
       type: 'POST',
-      url: '/customer/register?ajax=true',
+      url: '/user/register?ajax=true',
       data : j('#register-form').serialize(),
       success: server_event
     });
@@ -311,7 +311,7 @@ window.init_data = function(data) {
     hide($('logged_out'));
     hide($('overlay'));
     hide($('register-dialog'));
-    main.data.customer = {}; //logged in
+    main.data.user = {}; //logged in
   });
   
   window.hide_them_all = function() {
@@ -339,7 +339,7 @@ window.init_data = function(data) {
       '<div class="d-close" onclick="hide_them_all()"><span>X<span></div>'+
       '<div class="d-title" align="center">Vítejte zpátky!</div>'+
       '<div class="d-content">'+
-        '<form id="login-form" action="/customer/login" method="POST">'+
+        '<form id="login-form" action="/user/login" method="POST">'+
           '<div class="page visible">'+
             '<table>'+
             '<tr><td><label for="login_email">váš email:</label></td>'+

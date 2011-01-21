@@ -67,59 +67,7 @@ class User < Model
       'new'
     end
   end
-  /*
-  def buy(offer:Offer, pieces:int); returns Order
-    if offer == null
-      raise 'No Offer given!'
-    end
-    
-    if Order.all.offer_id(offer.id).user_id(id).first
-      raise ClientException.new('Pro tuto nabídku jste již nakoupili kupony.')
-    end
-    
-    offer_id = offer.id
-    
-    this = self
-    
-    pcs = pieces #mirah bug woraround
-    
-    Model.transaction do    
-      offer_t = Offer.get(offer_id)
-      offer_t.order_counter = offer_t.order_counter + 1
-      this.order_counter = offer_t.order_counter
-      offer_t.buy(pcs)
-      offer_t.save || (raise 'Could not save Offer.')
-    end
-    offer_counter = offer.offer_counter
-    
-    offer = Offer.get(offer_id)
-
-    o = Order.new
-    o.payment_confirmed = false
-    o.user_id = id
-    o.offer_id = offer.id
-    o.pieces = pieces
-    o.variable_symbol = '10'+(offer_counter+100)+(self.order_counter+10000)
-
-    
-    if offer.is_activated
-      o.waiting_for_activation = false
-    else
-      o.waiting_for_activation = true
-    end
-    
-    offer.save || raise('could not save Offer')
-    o
-  end    
-  
-  def order_counter
-    @order_counter
-  end
-  
-  def order_counter=(l:long)
-    @order_counter = l
-  end
-*/
+ 
   def self.register(name:String, email:String, password:String)
     user = new
     user.name = name

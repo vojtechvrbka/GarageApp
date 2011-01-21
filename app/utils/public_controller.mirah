@@ -16,33 +16,53 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 import com.google.appengine.ext.duby.db.Model;
 
-
+import javax.servlet.*
+import javax.servlet.http.*
 
 class PublicController < MyController
   def initialize
      @page_content = String(nil)
   end
-  
+
+
   def before_action
     
-    if user_id = session.getAttribute("user_id")
-      user = User.get(Long(user_id).intValue)
-    else
-      user = User(null)
-    end
+    if Application.development?      
+      if cookies = params.request.getCookies
+        cookies.each { |cookie|
+       #   puts cookie.getName + " "
+          if cookie.getName.equals(:user_id)
+            unless cookie.getValue.equals('') || cookie.getValue == null
+              id = Integer.parseInt(cookie.getValue)
+              if user = User.get(id)
+                self.user = user
+              end
+            end
+          end
+        }
+      end
+    end   
     
+    user = self.user
     @userline = '
       <div id="logged_in" class="'+(logged_in? ? 'visible' : 'hidden')+'">
-        <span id="logged_in_email">'+(logged_in? ? Long.toString(user.id) +' '+ user.email : '')+'</span>
-         | <a href="/user/logout" onclick="logout(); return false">odhlásit</a>
+        <span id="logged_in_email">'+(logged_in? ? user.email : '')+'</span>
+         | <a href="/user/logout" onclick="logout(); return false">Logout</a>
      </div>
       <div id="logged_out" class="'+(logged_in? ? 'hidden' : 'visible')+'">
-         | <a href="/user/register" onclick="show_register(); return false" >registrovat</a>
-         | <a href="/user/login" onclick="show_login(); return false" >přihlásit</a>
+         | <a href="/user/register" onclick="show_register(); return false" >Register</a>
+         | <a href="/user/login" onclick="show_login(); return false" >Sign in</a>
       </div>
       '
     
-    #self.json = ''
+    @menu_top = '
+    <ul>
+        <li class="tray-active"><a href="/">Homepage</a></li>
+				<li><a href="/vehicle/garage">My garage</a></li>
+				<li><a href="/stats">My Stats</a></li>
+	      <li><a href="/vehicle">Listing vehicles</a></li>
+    </ul>'
+    
     self.json = "user:"+user_json
   end   
   
@@ -72,6 +92,10 @@ class PublicController < MyController
     @userline
   end
 
+  def menu_top
+    @menu_top
+  end
+
   def logged_in?
     session.getAttribute(:user_id) != null 
   end
@@ -85,6 +109,15 @@ class PublicController < MyController
   end
   
   def user=(user:User)
+    if Application.development?
+      if user == nil
+        cookie = Cookie.new(:user_id, '')
+      else
+        cookie = Cookie.new(:user_id, String.valueOf(user.id))
+      end    
+      cookie.setPath('/')
+      params.response.addCookie(cookie)
+    end
     request.
       getSession().
       setAttribute(

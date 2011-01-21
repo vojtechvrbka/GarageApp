@@ -123,8 +123,8 @@ class  FuelingController < PublicController
       	<td>#{h(Double.toString(fe.quantity))}</td>
       	<td>#{h(fe.fuel_unit)}</td>
       	<td>#{h(Double.toString(fe.price) + ' ' + fe.price_currency)}</td>
-      	<td> <a href='/fueling/edit/#{fe.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-      	<td> <a href='/fueling/remove/#{fe.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
+      	<td> <a class='button'  href='/fueling/edit/#{fe.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
+      	<td> <a class='button'  href='/fueling/remove/#{fe.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
       </tr>"
       end
       html += "</table>"
@@ -133,7 +133,7 @@ class  FuelingController < PublicController
         html += "<div> No fueling entries </div>"
         null
       end
-      html += "<a href='/fueling/new?vehicle=#{params[:vehicle]}'>Add fueling entry</a>"
+      html += "<a class='button'  href='/fueling/new?vehicle=#{params[:vehicle]}'>Add fueling entry</a>"
       html
   end
   
@@ -145,7 +145,7 @@ class  FuelingController < PublicController
 
       <dl>
         <dt><label for="date">date:</label></dt>
-    		<dd><input type="text" id="date" name="fueling[date]" value="#{h(Long.toString(@fueling.date))}"></dd>
+    		<dd><input type="text" id="date" class="date-field hasDatepicker"  name="fueling[date]" value="#{h(Long.toString(@fueling.date))}"></dd>
       </dl>
       <dl>
         <dt><label for="type">type:</label></dt>

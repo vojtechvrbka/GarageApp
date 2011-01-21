@@ -12,11 +12,23 @@ class  VehicleController < PublicController
     
     @empty = false
     begin
-      @vehicles = Vehicle.all.user_id(user.id).deleted(false).run
+      @vehicles = Vehicle.all.deleted(false).run
     rescue
       @empty = true
     end
     list_erb
+  end
+  
+  def garage
+    @logged_in = logged_in?
+    if logged_in?
+      if @vehicles = Vehicle.all.user_id(user.id).deleted(false).run
+        @empty = false
+      else
+        @empty = true
+      end
+    end
+    garage_erb
   end
   
   def new
@@ -134,8 +146,13 @@ class  VehicleController < PublicController
                            "<option value='km'>kilometers</option>" +
                             "<option value='m'>miles</option>" +
                             "</select>"    
-    
-    
+                            /*
+     odometer_unit_select = Element.select.
+                              option("1", "one").
+                              option("2", "two").
+                              option("3", "three").
+                              value("2").to_s
+    */
     <<-HTML
     <h1>#{@new ? 'Create vehicle' : 'Edit vehicle'}</h1>
 
@@ -269,12 +286,41 @@ class  VehicleController < PublicController
     </p>
     HTML
   end
+
   
   def list_erb 
-  
-    html = "<h2> My vehicles</h2>"
+    html = "<h2>Vehicles</h2>"
     if !@empty
-    html = "
+    html += "
+    <table>
+      <tr>
+        <th>Type</th>
+    		<th>Maker</th>
+    		<th>Model</th>
+    		<th>Exact</th>
+    		<th>&nbsp;</th>
+      </tr>"
+      
+    @vehicles.each do |vehicle|
+      html += "
+    <tr>
+      <td>#{h(vehicle.type.name)}</td>
+    	<td>#{h(vehicle.maker.name)}</td>
+    	<td>#{h(vehicle.model.name)}</td>
+    	<td>#{h(vehicle.model_exact)}</td>
+    	<td> <a class='button' href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a> </td>
+    </tr>"
+      end
+      html += '</table>'
+    else
+      html += "No vehicles"
+    end
+  end
+  
+  def garage_erb 
+    html = "<h2>My garage</h2>"
+    if !@empty
+    html += "
     <table>
       <tr>
         <th>Type</th>
@@ -297,15 +343,12 @@ class  VehicleController < PublicController
     	<td> <a class='button' href='/vehicle/edit/#{vehicle.id}'>Edit</a> </td>
     	<td> <a class='button' href='/vehicle/remove/#{vehicle.id}'>Delete</a> </td>
     </tr>"
-    end
-    html += '</table>'
-    end
+      end
+      html += '</table>'
+    else
+      html += "No vehicles"
+    end    
     html += "<a class='button' href='/vehicle/new'>Add vehicle</a>"
-  
-
   end
-  #def_edb(show_erb, 'views/vehicle/show.html.erb')
-  #def_edb(list_erb, 'views/vehicle/list.html.erb')
-  #def_edb(edit_erb, 'views/vehicle/edit.html.erb')
 
 end

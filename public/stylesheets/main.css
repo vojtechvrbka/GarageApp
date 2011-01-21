@@ -57,7 +57,7 @@ ul.ul-list span.date {padding-right:10px;}
     #tray li {display:inline;}
     #tray li a {display:block; float:left; padding:17px 20px 17px 18px; background:url("../design/tray-separator.gif") 100% 0 no-repeat; text-decoration:none;}
     #tray li a:hover {background:url("../design/tray-hover.gif");}
-    #tray li#tray-active a {background:url("../design/tray-active.gif");}
+    #tray li.tray-active a {background:url("../design/tray-active.gif");}
 
         #search {position:absolute; top:8px; right:20px;}
         #search div {position:relative; width:185px;}

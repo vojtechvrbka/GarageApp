@@ -39,6 +39,14 @@ class SiteController < PublicController
     main_erb
   end
   
+  def stats
+    c = StatsController.new
+    c.execute(params)
+    @page_content = params.content
+    self.page_title = 'Motocash'
+    self.page_description = 'motocash'
+    main_erb
+  end
     
   def index
   #  redirect_to '/vehicle/'
@@ -107,7 +115,6 @@ class SiteController < PublicController
   end
 
   
-  # def_edb(homepage_erb, 'views/site/homepage.html.erb')
   def_edb(main_erb, 'views/layouts/site.html.erb')
 end
 

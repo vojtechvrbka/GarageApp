@@ -1,6 +1,5 @@
-#application: kyblslev
 application: motocashapp
-version: alfa1
+version: alfa-1
 runtime: java
 public_root: /public
 sessions_enabled: true
@@ -9,19 +8,14 @@ resource_files:
   - exclude: /build/**
 
 handlers: 
-    
+  - url: /*
+    servlet: controllers.SiteController
+    name: site
+        
   - url: /admin/*
     servlet: controllers.AdminController
     name: admin    
     
-  - url: /customer/*
-    servlet: controllers.CustomerController
-    name: customer
-
-  - url: /0e411e1bbaba90b26c1cf25142cf4457/*
-    servlet: controllers.UploadController
-    name: upload
-    
-  - url: /*
-    servlet: controllers.SiteController
-    name: site        
+  - url: /user/*
+    servlet: controllers.UserController
+    name: user    
