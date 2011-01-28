@@ -12,6 +12,10 @@ import java.io.StringWriter
 import javax.servlet.http.*
 
 class ShowException
+
+  def self.plain(e:Throwable)
+    new.plaintext(e)
+  end
   
   def initialize
     @html = '<html>
@@ -77,6 +81,56 @@ class ShowException
     <body> 
     '
     @vars = ''
+  end
+  
+  
+  def plaintext(ex:Throwable):String
+    sw = StringWriter.new()
+    pw = PrintWriter.new(sw, true)
+    ex.printStackTrace(pw)
+    pw.flush() 
+    sw.flush()
+    
+    trace = ''
+    lineno = 0
+    first_app = true
+    sw.toString().split("\n").each { |_line|
+      if lineno == 0
+        lineno += 1
+        next
+      end
+      lineno += 1
+      
+      chunks = _line.split("at ")
+      if chunks.length > 1
+        line = _line.split("at ")[1]
+      else
+        line = _line
+      end
+      
+      cls = 'app'
+      
+      if line.startsWith('dubious.') || 
+          line.startsWith('org.mortbay') ||
+          line.startsWith('javax.servlet')
+        next
+      end
+      
+      if cls.equals('app') && first_app
+        first_app = false
+        cls += ' first'
+      end
+      
+      if line.startsWith('sun.reflect')
+        cls = 'fw-reflection'
+      end      
+      
+      trace += "\n  "+line
+    }
+    
+    
+    text = "#{ex.getMessage} (#{ex.getClass.getName})#{trace}"
+    
   end
   
   def pretty(request:HttpServletRequest, ex:Throwable)

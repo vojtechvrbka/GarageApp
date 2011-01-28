@@ -29,7 +29,6 @@ MIRAH_HOME = ENV['MIRAH_HOME'] ? ENV['MIRAH_HOME'] : Gem.find_files('mirah').fir
 MODEL_SRC_JAR =  File.join(MIRAH_HOME, 'examples', 'appengine', 'war',
                                  'WEB-INF', 'lib', 'dubydatastore.jar')
 
-=begin
 def mirahc *files
   p files
   if files[-1].kind_of?(Hash)
@@ -37,19 +36,20 @@ def mirahc *files
   else
     options = {}
   end
-  source_dir = options.fetch(:dir, Duby.source_path)
-  dest = File.expand_path(options.fetch(:dest, Duby.dest_path))
+  source_dir = options.fetch(:dir, Mirah.source_path)
+  dest = File.expand_path(options.fetch(:dest, Mirah.dest_path))
   files = files.map {|f| f.sub(/^#{source_dir}\//, '')}
-  flags = options.fetch(:options, Duby.compiler_options)
+  flags = options.fetch(:options, Mirah.compiler_options)
   args = ['-d', dest, *flags] + files
   chdir(source_dir) do
     cmd = "mirahc #{args.join ' '}"
     puts cmd
-    Duby.compile(*args)
-    #Duby.reset
+    Mirah.compile(*args)
+    #Mirah.reset
   end
+  generate_build_properties
 end
-=end
+
 
 OUTDIR = 'WEB-INF/classes'
 
@@ -73,50 +73,29 @@ STDLIB_CLASSES= LIB_CLASSES.select{|l|l.include? 'stdlib'}
 
 CLASSPATH = [AppEngine::Rake::SERVLET, AppEngine::SDK::API_JAR].join(":")
 
-Duby.dest_paths << OUTDIR
-Duby.source_paths << 'lib'
-Duby.source_paths << 'app'
-Duby.compiler_options << '--classpath' << [File.expand_path(OUTDIR), *FileList["WEB-INF/lib/*.jar"].map{|f|File.expand_path(f)}].join(':') + ':' + CLASSPATH
+Mirah.dest_paths << OUTDIR
+Mirah.source_paths << 'lib'
+Mirah.source_paths << 'app'
+Mirah.compiler_options << '--classpath' << [File.expand_path(OUTDIR), *FileList["WEB-INF/lib/*.jar"].map{|f|File.expand_path(f)}].join(':') + ':' + CLASSPATH
 
+directory OUTDIR
 CLEAN.include(OUTDIR)
+
 CLOBBER.include("WEB-INF/lib/dubious.jar", 'WEB-INF/appengine-generated')
+
 
 APP_SRC = Dir["app/**/{*.duby,*.mirah}"]
 APP_CLASSES = class_files_for APP_SRC
-APP_MODEL_CLASSES = APP_CLASSES.select {|app| app.include? '/models' }
-APP_EXT_CLASSES = APP_CLASSES.select {|app| app.include? '/ext' }
-APP_CONTROLLER_CLASSES = APP_CLASSES.select {|app| app.include? '/controllers' }
-APP_APPLICATION_CONTROLLER_CLASS = APP_CONTROLLER_CLASSES.find {|controller| controller.include? 'ApplicationController' }
-TEMPLATES = Dir["app/views/**/*.erb"]
-
-directory OUTDIR
-
+APP_CONTROLLER_CLASSES = APP_CLASSES.select {|app| app.include? '/models' }
 
 (APP_CLASSES+LIB_CLASSES).zip(APP_SRC+LIB_SRC).each do |klass,src|
   file klass => src
 end
 
-=begin
-APP_CONTROLLER_CLASSES.reject {|k|k == APP_APPLICATION_CONTROLLER_CLASS}.each do |klass|
-  file klass => APP_APPLICATION_CONTROLLER_CLASS
+TEMPLATES = Dir["app/views/**/*.erb"]
+TEMPLATES.each do |klass|
+  file klass => APP_CONTROLLER_CLASSES
 end
-
-APP_CONTROLLER_CLASSES.each do |f|
-  file f => APP_MODEL_CLASSES + TEMPLATES
-end
-
-APP_MODEL_CLASSES.each do |f|
-  file f => APP_EXT_CLASSES
-end
-
-APP_CLASSES.each do |f|
-  file f => LIB_CLASSES
-end
-
-file MODEL_JAR => MODEL_SRC_JAR do |t|
-  cp MODEL_SRC_JAR, MODEL_JAR
-end
-=end
 
 
 # simplest automatic dependency resoltuion
@@ -153,7 +132,9 @@ APP_CLASSES.each { |f|
     line.scan(/[A-Z][A-Za-z0-9]*/).each { |klass|
       if (src = filemap[klass]) && (klass != classmap[f][:class])
         if !dependencies[f][src[:dest]]
-          #puts f + " depends on " + src[:dest]
+          if f.include?("TestController")
+            puts f + " depends on " + src[:dest]
+          end
           dependencies[f][src[:dest]] = true
           #p [f, src[:dest]]
           #file f, src[:dest]#dependencies[f].keys
@@ -196,37 +177,11 @@ task :server
 
 task :default => :server
 
-task :generate_build_properties do
-  def git_data(dir, file='')
-    returning = nil
-    chdir dir do
-      # ["commit abc....123", "2010-06-23 12:58:06 -0700"]
-      IO.popen("git rev-list --pretty=format:%ci -1 HEAD #{file}") do |f|
-        returning = [f.gets.chomp, f.gets.chomp]
-      end
-    end
-    returning
-  end
-
-  dubious_data = git_data(".")
-  mirah_data = git_data(MIRAH_HOME)
-  bite_data = git_data(MIRAH_HOME + '/../bitescript')
-  model_data = git_data(File.dirname(MODEL_SRC_JAR),File.basename(MODEL_SRC_JAR))
-
+def generate_build_properties
   prop_file = "config/build.properties"
   File.open(prop_file, 'w') do |f| 
     f.write <<-EOF
-# the current build environment
-application.build.time=#{Time.now.xmlschema}
-dubious.version.commit=#{dubious_data[0][7..-1]}
-dubious.version.time=#{Time.parse(dubious_data[1]).xmlschema}
-mirah.version.commit=#{mirah_data[0][7..-1]}
-mirah.version.time=#{Time.parse(mirah_data[1]).xmlschema}
-bitescript.version.commit=#{bite_data[0][7..-1]}
-bitescript.version.time=#{Time.parse(bite_data[1]).xmlschema}
-model.version.commit=#{model_data[0][7..-1]}
-model.version.time=#{Time.parse(model_data[1]).xmlschema}
+time=#{Time.now.to_i*1000}
     EOF
   end
-
 end

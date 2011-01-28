@@ -1,4 +1,4 @@
-import com.google.appengine.ext.duby.db.Model;
+import com.google.appengine.ext.mirah.db.*
 import com.google.appengine.api.datastore.*;
 import dubious.*
 import ext.*

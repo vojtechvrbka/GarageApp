@@ -11,7 +11,11 @@ handlers:
   - url: /*
     servlet: controllers.SiteController
     name: site
-        
+    
+  - url: /m/*
+    servlet: controllers.MobileController
+    name: mobile
+              
   - url: /admin/*
     servlet: controllers.AdminController
     name: admin    

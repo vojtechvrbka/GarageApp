@@ -10,15 +10,30 @@ class Element
     Select.new
   end
   
+  def self.a:A
+    A.new
+  end
+  
   def self.select(name:String)
     Select.new.name(name)
   end
+  
+protected 
+
+  def initialize
+  end
+  
+public 
   
   def initialize(tag_name:String)
     @tag_name = tag_name
     @attributes = HashMap(nil)
     @inner_text = String(nil)
     @children = ArrayList(nil)
+  end
+  
+  def class(className:String)
+    set(:class, className)
   end
   
   def to_s
@@ -88,11 +103,20 @@ class Element
     self
   end
   
+  def text(text:String)
+    @inner_html = Element.escape_html(text)
+    self
+  end
+  
   def append_child(e:Element)
     unless @children
       @children = ArrayList.new()
     end
     @children.add(e)
+  end
+  
+  def add(html:String)
+    @children.add(TextElement.new(html))
   end
   
   # escape special characters
@@ -119,6 +143,8 @@ class Element
     return buffer.toString
   end    
   
+  def self.escape_html(html:String); html_escape(html); end
+  
   def end_tag
     if pair_tag?
       "</#{@tag_name}>"
@@ -135,7 +161,45 @@ class Element
     to_s
   end
 
+  
+  
+  
+  
+  
+  
+  
+  class TextElement < Element
+    def initialize(html:String)
+      super()
+      @html = html
+    end
+    
+    def to_s
+      @html
+    end
+  end
 
+  
+  class A < Element
+    def initialize
+      super(:a)
+    end
+    
+    def href(url:String)
+      set(:href, url)
+      self
+    end
+    
+    def href
+      get(:href)
+    end
+    
+    def html(h:String)
+      super(h)
+      self
+    end
+  end
+  
 
   class Option < Element
     def initialize

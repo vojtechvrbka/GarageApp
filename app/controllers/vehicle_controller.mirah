@@ -80,13 +80,13 @@ class  VehicleController < PublicController
       null
     end
     
-    redirect_to :index
+    redirect_to '/vehicle/garage'
   end 
   
   def remove
     @vehicle = Vehicle.get(params.id)
     @vehicle.delete
-    redirect_to :index
+    redirect_to '/vehicle/garage'
   end  
   
   def edit_erb
@@ -129,30 +129,26 @@ class  VehicleController < PublicController
       fuel_type_select += "<option value='#{fuel_type.id}' #{selected}>#{fuel_type.name}</option>"
     end
     fuel_type_select += "</select>"
+
+
+    fuel_unit_select =  Element.select("vehicle[fuel_unit]").
+                               option("l", "liter").
+                               option("us.gal", "US Gallon").
+                               option("imp.gal", "Imperial Gallon").
+                               value(@vehicle.fuel_unit).to_s    
+                               
+    engine_power_unit_select =  Element.select("vehicle[engine_power_unit]").
+                               option("kw", "kW").
+                               option("ps", "ps").
+                               option("hp", "hp").
+                               value(@vehicle.engine_power_unit).to_s
     
-    fuel_unit_select = "<select name='vehicle[fuel_unit]'>" +
-                        "<option value='l'>liter</option>" +
-                        "<option value='gal_us'>Gallon (US)</option>" +
-                         "<option value='gal_gb'>Gallon (GB)</option>" +
-                        "</select>"
-    
-    engine_power_unit_select = "<select name='vehicle[engine_power_unit]'>" +
-                        "<option value='kw'>kW</option>" +
-                        "<option value='ps'>PS</option>" +
-                         "<option value='hp'>hp</option>" +
-                        "</select>"
-                        
-    odometer_unit_select = "<select name='vehicle[odometer_unit]'>" +
-                           "<option value='km'>kilometers</option>" +
-                            "<option value='m'>miles</option>" +
-                            "</select>"    
-                            /*
-     odometer_unit_select = Element.select.
-                              option("1", "one").
-                              option("2", "two").
-                              option("3", "three").
-                              value("2").to_s
-    */
+    odometer_unit_select =  Element.select("vehicle[odometer_unit]").
+                               option("km", "kilometers").
+                               option("m", "miles").
+                               value(@vehicle.odometer_unit).to_s     
+
+
     <<-HTML
     <h1>#{@new ? 'Create vehicle' : 'Edit vehicle'}</h1>
 
@@ -319,6 +315,8 @@ class  VehicleController < PublicController
   
   def garage_erb 
     html = "<h2>My garage</h2>"
+    if @logged_in
+    
     if !@empty
     html += "
     <table>
@@ -332,23 +330,27 @@ class  VehicleController < PublicController
     		<th>&nbsp;</th>
       </tr>"
       
-    @vehicles.each do |vehicle|
+      @vehicles.each do |vehicle|
       html += "
-    <tr>
-      <td>#{h(vehicle.type.name)}</td>
-    	<td>#{h(vehicle.maker.name)}</td>
-    	<td>#{h(vehicle.model.name)}</td>
-    	<td>#{h(vehicle.model_exact)}</td>
-    	<td> <a class='button' href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a> </td>
-    	<td> <a class='button' href='/vehicle/edit/#{vehicle.id}'>Edit</a> </td>
-    	<td> <a class='button' href='/vehicle/remove/#{vehicle.id}'>Delete</a> </td>
-    </tr>"
+      <tr>
+        <td>#{h(vehicle.type.name)}</td>
+    	  <td>#{h(vehicle.maker.name)}</td>
+    	  <td>#{h(vehicle.model.name)}</td>
+    	  <td>#{h(vehicle.model_exact)}</td>
+    	  <td> <a class='button' href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a> </td>
+    	  <td> <a class='button' href='/vehicle/edit/#{vehicle.id}'>Edit</a> </td>
+    	  <td> <a class='button' href='/vehicle/remove/#{vehicle.id}'>Delete</a> </td>
+      </tr>"
       end
       html += '</table>'
     else
       html += "No vehicles"
     end    
+    
     html += "<a class='button' href='/vehicle/new'>Add vehicle</a>"
+    else
+      html += "Please, Login first"
+    end
   end
-
+  
 end

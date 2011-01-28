@@ -1,5 +1,4 @@
 import dubious.*
-import ext.*
 import models.*
 
 import java.util.regex.*
@@ -12,7 +11,6 @@ import org.apache.commons.codec.binary.*
 import com.google.appengine.api.users.UserService
 import com.google.appengine.api.users.UserServiceFactory
 
-import java.util.Properties
 import javax.mail.Message
 import javax.mail.MessagingException
 import javax.mail.Session
@@ -26,20 +24,18 @@ import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
-import java.io.FileInputStream
-import com.google.appengine.ext.duby.db.Model
+import com.google.appengine.ext.mirah.db.*
 import javax.servlet.ServletConfig
 import javax.servlet.http.*
 import java.util.regex.Pattern
 import java.util.Arrays
 import java.util.HashMap
-import dubious.*
-import ext.*
-import dubious.*
-import ext.*
+import dubious.Params
+import dubious.FormHelper
 import java.io.File
 import java.net.URI
 
+import java.util.Properties
 
 
 
@@ -66,8 +62,12 @@ class MyController < HttpServlet
   end
   
   def respond(data:String)
-    params.respond(data)
+    params.respond_string(data)
   end
+  
+  def respond_json(json:String); returns void
+    params.respond_json(json)
+  end  
   
   def redirect_to(where:String)
     #if @action == null || where != @action
@@ -165,6 +165,13 @@ class MyController < HttpServlet
     end
     return
   end
+  
+  def eat()
+    params.eat()
+    unless @action_set
+      self.action = params.peek
+    end
+  end
       
   def _execute(e:RequestEvent):void
     @nested = MyController(nil)
@@ -180,6 +187,7 @@ class MyController < HttpServlet
         not_found = false
         e.action #remove the action from url
         me = self
+        @action_set = true
         content = String.valueOf(method.invoke(me, null))
       end
     }
@@ -255,16 +263,21 @@ class MyController < HttpServlet
   
   
 
-  def doGet(request, response)
-    #request.setCharacterEncoding('UTF-16');
+  def doGet(request, response):void
+    #puts request.getContentType
     self.params = RequestEvent.new(request, response)
-    execute(params)
-      
+    execute(params)      
     params.output
   end 
   
-  def doPost(request, response)
-    doGet(request, response)
+  def doPost(request, response):void
+    if request.getContentType.equals("application/coffee-pot-command")
+      response.setStatus(418, "I'm a teapot")
+      nil
+    else
+      doGet(request, response)
+      nil
+    end
   end     
   
   def reply(kind:String, message:String)
@@ -286,25 +299,12 @@ class MyController < HttpServlet
     reply(@action+'_ok', '')
   end     
 
-  
-  
-  def build_info(key:String)
-    props = Properties.new
-    begin
-      props.load(FileInputStream.new("config/app.properties"))
-      out = props.getProperty(key)
-    rescue
-      out = 'unset'
-    end
-    out
-  end
-  
   def exception_email(subject:String, message:String)
     props = Properties.new()
     session = Session.getDefaultInstance(props, null)
 
-    from = build_info('application.exception_from')
-    build_info('application.exception_to').split(',').each { |to|    
+    from = Application.config('exceptions.send_from')
+    Application.config('exceptions.send_to').split(',').each { |to|    
       
       msg = MimeMessage.new(session)
       msg.setFrom(InternetAddress.new(from, "Your Server"))
@@ -325,10 +325,6 @@ class MyController < HttpServlet
       mp.addBodyPart(htmlPart);
       
       msg.setContent(mp)
-      /*
-      puts subject
-      puts message        
-      */
       Transport.send(msg)      
     }
     null

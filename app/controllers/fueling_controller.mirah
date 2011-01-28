@@ -138,6 +138,28 @@ class  FuelingController < PublicController
   end
   
   def edit_erb
+    
+    type_select = Element.select('fueling[type]').
+                   option("full", "Full").
+                   option("partly_full", "Partly full").
+                   option("first_fueling", "First fueling").
+                   option("invalid", "Invalid").
+                   value(@fueling.type).to_s
+    
+    fuel_unit_select = Element.select('fueling[fuel_unit]').
+                             option("l", "l").
+                             option("us.gal", "US.gal").
+                             option("imp.gal", "Imp.gal").
+                             value(@fueling.fuel_unit).to_s
+                             
+    price_currency_select  = Element.select('fueling[price_currency]').
+                             option("usd", "USD").
+                             option("eur", "EUR").
+                             option("kc", "Kč").
+                             value(@fueling.price_currency).to_s
+              
+              
+                                                          
      <<-HTML
     <h1>#{@new ? 'Add fueling entry' : 'Edit fueling entry'}</h1>
 
@@ -149,7 +171,7 @@ class  FuelingController < PublicController
       </dl>
       <dl>
         <dt><label for="type">type:</label></dt>
-    		<dd><input type="text" id="type" name="fueling[type]" value="#{h(@fueling.type)}"></dd>
+    		<dd>#{type_select}</dd>
       </dl>
       <dl>
         <dt><label for="odometer">odometer:</label></dt>
@@ -157,19 +179,16 @@ class  FuelingController < PublicController
       </dl>
       <dl>
         <dt><label for="quantity">quantity:</label></dt>
-    		<dd><input type="text" id="quantity" name="fueling[quantity]" value="#{h(Double.toString(@fueling.quantity))}"></dd>
+    		<dd><input type="text" id="quantity" name="fueling[quantity]" value="#{h(Double.toString(@fueling.quantity))}">
+    		  #{fuel_unit_select}
+    		  </dd>
       </dl>
-      <dl>
-        <dt><label for="fuel_sort">fuel_unit:</label></dt>
-    		<dd><input type="text" id="fuel_sort" name="fueling[fuel_unit]" value="#{h(@fueling.fuel_unit)}"></dd>
-      </dl>
+
       <dl>
         <dt><label for="price">price:</label></dt>
-    		<dd><input type="text" id="price" name="fueling[price]" value="#{h(Double.toString(@fueling.price))}"></dd>
-      </dl>
-      <dl>
-        <dt><label for="price_currency">price_currency:</label></dt>
-    		<dd><input type="text" id="price_currency" name="fueling[price_currency]" value="#{h(@fueling.price_currency)}"></dd>
+    		<dd><input type="text" id="price" name="fueling[price]" value="#{h(Double.toString(@fueling.price))}">  
+    		  #{price_currency_select}
+    		  </dd>
       </dl>
       <dl>
         <dt><label for="note">note:</label></dt>
@@ -182,12 +201,7 @@ class  FuelingController < PublicController
     	</dl>
     </form>
 
-
     HTML
   end
-  
-  #def_edb(show_erb, 'views/fueling_entry/show.html.erb')
-  #def_edb(list_erb, 'views/fueling_entry/list.html.erb')
-  #def_edb(edit_erb, 'views/fueling_entry/edit.html.erb')
 
 end

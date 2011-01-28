@@ -9,11 +9,9 @@ class EarlyResponse < Exception;
   def request_event:RequestEvent
     @e
   end
-
 end
 
 import dubious.*
-import ext.*
 
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -28,6 +26,7 @@ import com.google.appengine.api.datastore.Blob
 
 import java.io.OutputStream
 import javax.servlet.http.HttpServletResponse
+
 
 
 class RequestEventMock < RequestEvent
@@ -58,7 +57,6 @@ class RequestEvent
     #puts "base is "+@base
     @redirected = false
     @redirected_to = ''
-    @json_response = ArrayList.new
     
     @is_multipart = false
     @files = HashMap.new
@@ -177,7 +175,11 @@ class RequestEvent
     end
     
     @redirected = true
-    if action.startsWith('/')
+    if action.startsWith('http://') || action.startsWith('https://')
+      puts "ABSOLUTE REDIRECT"
+      @redirected_to = action
+      null
+    elsif action.startsWith('/')
       @redirected_to = server_url+action
       null
     else      
@@ -259,30 +261,28 @@ class RequestEvent
     if redirected
       response.setStatus(303)
       response.setHeader('Location', redirected_to)
-      puts "REDIRECT TO #{redirected_to}"
+      #puts "REDIRECT TO #{redirected_to}"
       return
     end    
     
     if content_type.equals(:bytes)
       response.getOutputStream.write(bytes)
-      puts "RETURN BYTES"
+      #puts "RETURN BYTES"
       return
     end
     
     if content_type.equals(:json)
-      response.setContentType("text/html; charset=UTF-8")
-      json = '['
-      not_first = false
-      @json_response.each { |r|
-        if not_first
-          json += ','
-        end
-        not_first = true
-        json += String(r)
-      }
-      json += ']'
-      response.getWriter.write(json)
-      puts "RETURN JSON"
+      if has? :callback
+        response.setContentType("application/javascript; charset=UTF-8")
+        self.content = self[:callback]+"("+content+")"
+        #puts "RETURN JSONP"
+        nil
+      else
+        response.setContentType("application/json; charset=UTF-8")
+        #puts "RETURN JSON"
+        nil
+      end
+      response.getWriter.write(content)
       return
     end
     
@@ -291,24 +291,24 @@ class RequestEvent
         response.setContentType("text/html; charset=UTF-8")
       end
       response.getWriter.write(content)
-      puts "RETURN STRING"
+      #puts "RETURN STRING"
       return
     end
-    puts "NOT RETURNING ANYTHING"
+    #puts "NOT RETURNING ANYTHING"
     return
   end
   
-  def respond(b:byte[])
+  def respond_bytes(b:byte[])
     self.content_type = :bytes
     self.bytes = b
     raise EarlyResponse.new(self)
   end
   
-  def respond(event:String); returns void
+  def respond_json(json:String); returns void
     self.content_type = :json
-    @json_response.add(event)    
-    return
-  end
+    @content = json
+    raise EarlyResponse.new(self)
+  end  
   
   def respond_string(event:String); returns void
     self.content_type = :string
@@ -374,11 +374,19 @@ class RequestEvent
     end
   end
   
-  def [] (param:String); returns String
+  def [](param:String); returns String
     if @is_multipart
       String(@mutlipart_params.get(param))
     else      
       @request.getParameter(param)
+    end
+  end
+  
+  def long(param:String):long
+    if @is_multipart
+      Long.parseLong(String(@mutlipart_params.get(param)))
+    else      
+      Long.parseLong(@request.getParameter(param))
     end
   end
   
@@ -426,10 +434,7 @@ class RequestEvent
   def response
     @response
   end
-  
-  def json_response
-    @json_response
-  end
+
 
   
   
@@ -443,7 +448,7 @@ class RequestEvent
   end  
     
   def id
-    Integer.parseInt(shift)
+    Long.parseLong(shift)
   end
   
   def parse_long

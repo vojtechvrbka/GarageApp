@@ -16,7 +16,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import com.google.appengine.ext.duby.db.Model;
+import com.google.appengine.ext.mirah.db.*
 
 
 class UserController < SiteController
