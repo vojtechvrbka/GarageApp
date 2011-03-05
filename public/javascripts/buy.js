@@ -102,7 +102,7 @@ window.init_data = function(data) {
         fire(events[i]);
       }
     } catch(exception) {
-      alert('Omlouváme se, nastala neočekávaná chyba :(. Kontaktujte nás, nebo chvíli počkejte a zkuste to znova.');  
+     // alert('Omlouváme se, nastala neočekávaná chyba :(. Kontaktujte nás, nebo chvíli počkejte a zkuste to znova.');  
     }
   };
   
@@ -337,19 +337,19 @@ window.init_data = function(data) {
   '<div id="login-dialog" class="dialog-wrap hidden" >'+
     '<div class="dialog" style="display:block; width: 500px; margin-left:auto; margin-right:auto;">'+
       '<div class="d-close" onclick="hide_them_all()"><span>X<span></div>'+
-      '<div class="d-title" align="center">Vítejte zpátky!</div>'+
+      '<div class="d-title" align="center">Welcome back!</div>'+
       '<div class="d-content">'+
         '<form id="login-form" action="/user/login" method="POST">'+
           '<div class="page visible">'+
             '<table>'+
-            '<tr><td><label for="login_email">váš email:</label></td>'+
+            '<tr><td><label for="login_email">Email:</label></td>'+
               '<td><input id="login_email" name="email" type="text" class="input_text" value=""/></td></tr>'+
-            '<tr><td><label for="login_pass">heslo:</label></td>'+
+            '<tr><td><label for="login_pass">Password:</label></td>'+
               '<td><input id="login_pass" name="password" type="password" class="input_password" value=""/></td>'+
             '</tr></table>'+
           '</div>'+
           '<div id="login-buttons" class="buttons">'+
-            '<button onclick="login(); return false">Přihlásit &raquo;</button>'+
+            '<button onclick="login(); return false">Login &raquo;</button>'+
           '</div>'+
         '</form>'+
       '</div>'+
@@ -359,26 +359,26 @@ window.init_data = function(data) {
   '<div id="register-dialog" class="dialog-wrap hidden">'+
     '<div class="dialog" style="display:block; width: 500px; margin-left:auto; margin-right:auto;">'+
       '<div class="d-close" onclick="hide_them_all()"><span>X</span></div>'+
-      '<div class="d-title" align="center">Registrovat</div>'+
+      '<div class="d-title" align="center">Sign up</div>'+
       '<div class="d-content">'+
         '<form id="register-form" action="/register" method="POST">'+
           '<div class="page visible">'+
             '<table><tr>'+
-              '<td><label for="name">váše jméno:</label></td>'+
+              '<td><label for="name">Name:</label></td>'+
               '<td><input id="register_name" name="name" class="required" type="text" class="input_text" value=""/></td>'+
             '</tr><tr>'+
-              '<td><label for="email">váš email:</label></td>'+
+              '<td><label for="email">Email:</label></td>'+
               '<td><input id="register_email" name="email" class="email required" type="text" class="input_text" value="@"/></td>'+
             '</tr><tr>'+
-              '<td><label for="f_password">heslo:</label></td>'+
+              '<td><label for="f_password">Password:</label></td>'+
               '<td><input id="f_password" name="password" type="password" class="input_password" value=""/></td>'+
             '</tr><tr>'+
-              '<td><label for="f_password_again">heslo znova:</label></td>'+
+              '<td><label for="f_password_again">Retype password:</label></td>'+
               '<td><input id="f_password_again" name="password_again" class="input_password" type="password" value=""/></td>'+
             '</tr></table>'+
           '</div>'+
           '<div id="buttons" class="buttons">'+
-            '<button class="register" onclick="register(); return false">Registrovat &raquo;</button>'+
+            '<button class="register" onclick="register(); return false">Sign up &raquo;</button>'+
           '</div>'+
         '</form>'+
       '</div>'+

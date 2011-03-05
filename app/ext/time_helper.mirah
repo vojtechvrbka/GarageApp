@@ -14,6 +14,12 @@ class TimeHelper
     now.month_day(1)
   end
   
+  def date(day:int,month:int,year:int) 
+    @c.set(Calendar.DAY_OF_MONTH, positive_only(day))
+    @c.set(Calendar.MONTH, positive(month)-1)
+    @c.set(Calendar.YEAR, positive(year))
+  end
+  
   #def self.midnight; now.midnight; end
   def midnight
     @c.set(Calendar.HOUR_OF_DAY, 23)

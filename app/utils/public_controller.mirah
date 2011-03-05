@@ -59,20 +59,10 @@ class PublicController < MyController
          | <a href="/user/logout" onclick="logout(); return false">Logout</a>
      </div>
       <div id="logged_out" class="'+(logged_in? ? 'hidden' : 'visible')+'">
-         | <a href="/user/register" onclick="show_register(); return false" >Register</a>
+         <a href="/user/register" onclick="show_register(); return false" >Sign up</a>
          | <a href="/user/login" onclick="show_login(); return false" >Login</a>
       </div>
       '
-    /*
-    @menu_top = 
-    '
-    <ul>
-        <li class="tray-active"><a href="/">Homepage</a></li>
-				<li><a href="/vehicle/garage">My garage</a></li>
-				<li><a href="/stats">My Stats</a></li>
-	      <li><a href="/vehicle">Listing vehicles</a></li>
-    </ul>' 
-*/
     
     self.json = "user:"+user_json
   end   

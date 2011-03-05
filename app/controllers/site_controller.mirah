@@ -21,46 +21,27 @@ import com.google.appengine.ext.mirah.db.*
 
 class SiteController < PublicController
 
-  def vehicle
-    c = VehicleController.new
-    c.execute(params)
-    @page_content = params.content
-    self.page_title = c.page_title
-    self.page_description = c.page_description
+  def garage
+    @page_content = nest GarageController.new
     main_erb
   end
 
+  def vehicle
+    @page_content = nest VehicleController.new
+    main_erb
+  end
+  
   def fueling
-    c = FuelingController.new
-    c.execute(params)
-    @page_content = params.content
-    self.page_title = 'Motocash'
-    self.page_description = 'motocash'
+    @page_content = nest  FuelingController.new
     main_erb
   end
   
   def stats
-    c = StatsController.new
-    c.execute(params)
-    @page_content = params.content
-    self.page_title = 'Motocash'
-    self.page_description = 'motocash'
+    @page_content = nest StatsController.new
     main_erb
   end
     
   def index
-  #  redirect_to '/vehicle/'
-
-    self.page_title = 'Motocash'
-    self.page_description = ''
-    
-    
-    if logged_in?
-      #no FB needed
-      null
-    else
-      null
-    end
     @page_content = homepage_erb
     main_erb
   end  

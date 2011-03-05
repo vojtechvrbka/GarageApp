@@ -1,4 +1,4 @@
-application: motocashapp
+application: garageapp
 version: alfa-1
 runtime: java
 public_root: /public
@@ -23,3 +23,7 @@ handlers:
   - url: /user/*
     servlet: controllers.UserController
     name: user    
+    
+  - url: /migrate/*
+    servlet: controllers.MigrationController
+    name: migrate

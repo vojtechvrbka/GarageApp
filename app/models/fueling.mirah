@@ -2,7 +2,7 @@ import com.google.appengine.ext.mirah.db.*
 import com.google.appengine.api.datastore.*;
 import dubious.*
 import ext.*
-
+import java.util.*
 
 class Fueling < Model
   property :vehicle_id,    Integer
@@ -37,7 +37,7 @@ class Fueling < Model
   
   def self.blank
     fe = new
-    fe.date = 0
+    fe.date = Date.new.getTime()
     fe.type = ''
     fe.odometer = 0
     fe.quantity = 0

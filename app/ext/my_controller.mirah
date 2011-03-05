@@ -203,7 +203,7 @@ class MyController < HttpServlet
   
   def handle_exception(ex:Throwable)
     name = ex.getClass.getName
-    
+    puts "name:"+name
     if name.endsWith(:ClientException)
       if params.ajax?
         reply_error(ex.getMessage)
@@ -237,12 +237,14 @@ class MyController < HttpServlet
   
   # application controller should override this one
   def private_exception(ex:Throwable):void
+    puts ShowException.plain(ex)
     out = ShowException.new.pretty(request, ex)
     #puts out
     params.content = out
   end
   
   def public_exception(ex:Throwable):void
+    puts ShowException.plain(ex)
     exception_email(
         ex.getMessage, 
         ShowException.new.pretty(request, ex)
@@ -251,6 +253,7 @@ class MyController < HttpServlet
   end
   
   def silent_exception(ex:Throwable):void
+    puts ShowException.plain(ex)
     exception_email(
         ex.getMessage, 
         ShowException.new.pretty(request, ex)
@@ -281,7 +284,7 @@ class MyController < HttpServlet
   end     
   
   def reply(kind:String, message:String)
-    respond "{event:'#{kind}', data:'#{message}'}"
+    params.respond_json("{event:'#{kind}', data:'#{message}'}", false)
     true
   end
   

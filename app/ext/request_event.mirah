@@ -305,9 +305,15 @@ class RequestEvent
   end
   
   def respond_json(json:String); returns void
+    respond_json(json,true)
+  end
+    
+  def respond_json(json:String, raise_exception:boolean); returns void
     self.content_type = :json
     @content = json
-    raise EarlyResponse.new(self)
+    if raise_exception
+      raise EarlyResponse.new(self)
+    end
   end  
   
   def respond_string(event:String); returns void

@@ -22,14 +22,17 @@ import com.google.appengine.ext.mirah.db.*
 class UserController < SiteController
 
   def login
+    
     if params.has(:email)      
       self.user = User.login(params[:email], params[:password])
       if params.has(:ajax)
         if user != null
-          reply_raw :set_user, user_json
-          reply_ok("Jste přihlášen(a).")
+          # reply_raw :set_user, user_json
+          # reply_ok("Jste přihlášen(a).")
+          respond_json('{"a":"a"}');
         else
-          reply_error("Špatný email, nebo heslo.")
+          # reply_error("Špatný email, nebo heslo.")
+          respond_json('{"a":"a"}');
         end
         null
       else
@@ -40,13 +43,14 @@ class UserController < SiteController
     @page_content = login_erb
     main_erb
   end
-  
+  /*
   def login_ajax
     self.user = User.login(params[:email], params[:password])
     if params.has(:ajax)
       if user != null
         reply :set_user, user_json
         reply_ok("Jste přihlášen(a).")
+        
       else
         reply_error("Špatný email, nebo heslo.")
       end
@@ -56,7 +60,7 @@ class UserController < SiteController
       null
     end
   end
-  
+  */
   def logout
     session = request.getSession()
     session.setAttribute("user_id", null)

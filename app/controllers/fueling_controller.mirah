@@ -7,13 +7,27 @@ class  FuelingController < PublicController
   
   
   def index
-    self.page_title = 'Obchodní podmínky'
-    self.page_description = ''
-
     vehicle_id = Integer.parseInt(params[:vehicle])
     if @vehicle = Vehicle.get(vehicle_id)  
       if Vehicle.get(vehicle_id).user_id == user.id
-        if @fuelings = Fueling.all.vehicle_id(vehicle_id).run
+        if @fuelings = Fueling.all.vehicle_id(vehicle_id).sort(:date).run
+          
+              
+          fuelings = Fueling.all.vehicle_id(@vehicle.id).sort(:date).run
+          prev = Fueling.blank
+          count = 0
+          sum = 0.0
+          fuelings.each do |f|
+            if prev.odometer > 0    
+              distance = f.odometer - prev.odometer
+              sum += (f.quantity / distance) * 100  
+              count += 1
+            end
+            prev = f
+          end
+          @consumption = Double.toString(sum/count)
+          
+          
           @emtry = false
         else
           @empty = true
@@ -37,8 +51,6 @@ class  FuelingController < PublicController
   def new
     @new = true
     @fueling = Fueling.blank
-    self.page_title = 'Add/Edit Fueling entry'
-    self.page_description = ''
     edit_erb
   end
   
@@ -98,37 +110,48 @@ class  FuelingController < PublicController
       html = "<h2> My fueling entries</h2>
 
       <div>
-      	#{h(@vehicle.type.name)} <br>
-      	#{h(@vehicle.maker.name)} <br>
-      	#{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}
+      	Type: #{h(@vehicle.type.name)} <br>
+      	Maker: #{h(@vehicle.maker.name)} <br>
+      	Model: #{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}<br>
+      	Avg consumption #{@consumption}
       </div>"
 
       if !@empty
         html += "
-        <table>
+        <table style='width:100%;'>
         <tr>
           <th>Date</th>
       		<th>Type</th>
       		<th>Odometer</th>
       		<th>Quantity</th>
-      		<th>Fuel Sort</th>
       		<th>Price</th>
+      		<th>Fuel consumption</th>
         </tr>"
-      @fuelings.each do |fe|
-      html += "
-      <tr>
-        <td>#{h(Long.toString(fe.date))}</td>
-      	<td>#{h(fe.type)}</td>
-      	<td>#{h(Double.toString(fe.odometer))}km</td>
-      	<td>#{h(Double.toString(fe.quantity))}</td>
-      	<td>#{h(fe.fuel_unit)}</td>
-      	<td>#{h(Double.toString(fe.price) + ' ' + fe.price_currency)}</td>
-      	<td> <a class='button'  href='/fueling/edit/#{fe.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-      	<td> <a class='button'  href='/fueling/remove/#{fe.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
-      </tr>"
-      end
-      html += "</table>"
-      null
+        
+        
+        prev = Fueling.blank
+        cons = 0.0
+        @fuelings.each do |fe|
+          d = TimeHelper.at(fe.date)
+           if prev.odometer > 0    
+              distance = fe.odometer - prev.odometer
+              cons = double(int( (fe.quantity / distance) * 100 * 100 ))/100
+            end
+          html += "
+          <tr>
+            <td>#{d.month}/#{d.month_day}/#{d.year}</td>
+          	<td>#{h(fe.type)}</td>
+          	<td>#{h(Double.toString(fe.odometer))} Km</td>
+          	<td>#{h(Double.toString(fe.quantity))}</td>
+          	<td>#{h(Double.toString(fe.price))}</td>
+          	<td>#{h(Double.toString(cons))} l/100 Km</td>
+          	<td> <a class='button'  href='/fueling/edit/#{fe.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
+          	<td> <a class='button'  href='/fueling/remove/#{fe.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
+          </tr>"
+          prev = fe
+        end
+        html += "</table>"
+        null
       else
         html += "<div> No fueling entries </div>"
         null
@@ -166,32 +189,35 @@ class  FuelingController < PublicController
     <form method="post" action="/fueling/save/#{String.valueOf(@fueling.url_id)}?vehicle=#{params[:vehicle]}">
 
       <dl>
-        <dt><label for="date">date:</label></dt>
-    		<dd><input type="text" id="date" class="date-field hasDatepicker"  name="fueling[date]" value="#{h(Long.toString(@fueling.date))}"></dd>
+        <dt><label for="date">Date:</label></dt>
+    		<dd>
+    		  <input type="text" class="date-field" id="date_to_human">
+    		  <input type="hidden" id="date_to_ts"  name="fueling[date]" value="#{h(Long.toString(@fueling.date))}">	
+    		</dd>
       </dl>
       <dl>
-        <dt><label for="type">type:</label></dt>
+        <dt><label for="type">Type:</label></dt>
     		<dd>#{type_select}</dd>
       </dl>
       <dl>
-        <dt><label for="odometer">odometer:</label></dt>
+        <dt><label for="odometer">Odometer:</label></dt>
     		<dd><input type="text" id="odometer" name="fueling[odometer]" value="#{h(Long.toString(@fueling.odometer))}"></dd>
       </dl>
       <dl>
-        <dt><label for="quantity">quantity:</label></dt>
+        <dt><label for="quantity">Quantity:</label></dt>
     		<dd><input type="text" id="quantity" name="fueling[quantity]" value="#{h(Double.toString(@fueling.quantity))}">
     		  #{fuel_unit_select}
     		  </dd>
       </dl>
 
       <dl>
-        <dt><label for="price">price:</label></dt>
+        <dt><label for="price">Price:</label></dt>
     		<dd><input type="text" id="price" name="fueling[price]" value="#{h(Double.toString(@fueling.price))}">  
     		  #{price_currency_select}
     		  </dd>
       </dl>
       <dl>
-        <dt><label for="note">note:</label></dt>
+        <dt><label for="note">Note:</label></dt>
     		<dd><input type="text" id="note" name="fueling[note]" value="#{h(@fueling.note)}"></dd>
       </dl>
      	<dl>
@@ -200,7 +226,37 @@ class  FuelingController < PublicController
     		</dt>
     	</dl>
     </form>
+    <script>
+    	$(function() 
+      {
+        console.log('yes');
+        $('.date-field').each(function() {
+          var ts_field = $('#'+this.id.replace('human', 'ts'))[0];
+          ts_field.value = ts_field.value*1 + new Date().getTimezoneOffset()*60*1000;
+          var dp = $(this).datepicker({
+            altField: ts_field,
+      			altFormat: '@',
+            dateFormat: 'mm/dd/yy',
+            firstDay: 0,
+            /*
+            onSelect: function(dateText) { 
+              //ts_field.value = ts_field.value*1 - new Date().getTimezoneOffset()*60*1000;
+            } 
+            */
+          });
 
+          $(this.form).submit(function() {
+              ts_field.value = ts_field.value*1 - new Date().getTimezoneOffset()*60*1000;
+            })
+
+          var date = new Date();
+          date.setTime(ts_field.value);
+          //console.log(ts_field);
+          this.value = $.datepicker.formatDate('mm/dd/yy', date);
+
+        })
+    	});
+    </script>
     HTML
   end
 
