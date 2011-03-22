@@ -26,11 +26,17 @@ class PublicController < MyController
   end
 
   def menu_top
-    SiteMenu.new(params).
-         item('Homepage', :index).
-         item('My garage', :garage).
-         item('My Stats', :stats).
-         item('Listing vehicles', :vehicle).to_s
+    if logged_in?
+      SiteMenu.new(params).
+           item('My garage', '/garage').
+           item('My Stats', '/stats').
+           item('Listing vehicles', '/vehicle').to_s
+         
+    else
+      SiteMenu.new(params).
+           item('Homepage', '/index').
+           item('Listing vehicles', '/vehicle').to_s
+    end     
   end
 
 
@@ -53,17 +59,20 @@ class PublicController < MyController
     end   
     
     user = self.user
-    @userline = '
+    
+    if logged_in?
+      @userline = '
       <div id="logged_in" class="'+(logged_in? ? 'visible' : 'hidden')+'">
         <span id="logged_in_email">'+(logged_in? ? user.email : '')+'</span>
-         | <a href="/user/logout" onclick="logout(); return false">Logout</a>
-     </div>
-      <div id="logged_out" class="'+(logged_in? ? 'hidden' : 'visible')+'">
-         <a href="/user/register" onclick="show_register(); return false" >Sign up</a>
-         | <a href="/user/login" onclick="show_login(); return false" >Login</a>
-      </div>
-      '
-    
+         | <a href="/user/logout">Logout</a>
+     </div>'
+    else
+      @userline = 
+       '<div id="logged_out" class="'+(logged_in? ? 'hidden' : 'visible')+'">
+           <a href="/user/register">Sign up</a>
+           | <a href="/user/login">Login</a>
+        </div>'
+    end
     self.json = "user:"+user_json
   end   
   

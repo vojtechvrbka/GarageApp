@@ -20,6 +20,12 @@ class TimeHelper
     @c.set(Calendar.YEAR, positive(year))
   end
   
+  def self.at_date(day:int,month:int,year:int) 
+    th = new
+    th.date(day,month,year)
+    th
+  end
+  
   #def self.midnight; now.midnight; end
   def midnight
     @c.set(Calendar.HOUR_OF_DAY, 23)
@@ -115,6 +121,37 @@ class TimeHelper
   
   def week_day
     @c.get(Calendar.DAY_OF_WEEK)    
+  end
+
+  def day_of_epoch
+    ms/(1000 * 3600 * 24)
+  end
+
+  def month_of_epoch
+    ( (year-1970)*12 + month )
+  end
+  
+  def self.at_month_of_epoch(epoch_month:Integer)
+    th = new
+    year = 1970+int(epoch_month.doubleValue/12)
+    month = epoch_month.intValue - int(epoch_month.doubleValue/12)*12
+    th.date(1,month,year)
+    th
+  end
+  
+  def self.month_title(month:int)
+    months = [ "Jan","Feb","Mar","Apr","May","Jun","July","Aug","Sep","Oct","Nov","Dec"]
+    months.get(month-1)
+  end
+  
+  def month_print
+    String(TimeHelper.month_title(month)) + " " + Integer.new(year-2000).toString
+  end
+  
+  def print_date:String
+    ( month_day > 9 ? Integer.toString(month_day) : "0"+Integer.toString(month_day) )+ "/" +
+    ( month > 9 ? Integer.toString(month) : "0"+Integer.toString(month) )+ "/" +   
+    Integer.toString(year)
   end
 
   def self.tomorrow; now.next_day; end    

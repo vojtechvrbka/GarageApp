@@ -3,6 +3,31 @@ import ext.*
 import models.*
 import utils.*
 import java.util.ArrayList
+import java.util.HashMap;
+
+/*
+class LiquidUnit
+  def self.values
+    vals = HashMap.new
+    vals.put('l','l')
+    vals.put('g_us','gallon (US)')
+    vals.put('g_imp','gallon (Imperial)')
+    vals
+  end
+  
+  def get_select
+    sel = Element.select
+    i = 0
+    self.values.each { |val|
+      sel.option(i, val.toString)
+      i+=1
+    }
+    sel.value(value.toString)
+    sel.to_s
+  end
+  
+end
+*/
 
 
 class Distance

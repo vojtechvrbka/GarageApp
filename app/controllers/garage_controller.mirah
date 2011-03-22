@@ -226,6 +226,7 @@ class  GarageController < PublicController
     		<th>&nbsp;</th>
     		<th>&nbsp;</th>
     		<th>&nbsp;</th>
+    		<th>&nbsp;</th>
       </tr>"
       
       @vehicles.each do |vehicle|
@@ -236,6 +237,7 @@ class  GarageController < PublicController
     	  <td>#{h(vehicle.model.name)}</td>
     	  <td>#{h(vehicle.model_exact)}</td>
     	  <td> <a class='button' href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a> </td>
+      	<td> <a class='button' href='/stats/?vehicle=#{vehicle.id}'>stats</a> </td>    	  
     	  <td> <a class='button' href='/garage/edit/#{vehicle.id}'>Edit</a> </td>
     	  <td> <a class='button' href='/garage/remove/#{vehicle.id}'>Delete</a> </td>
       </tr>"

@@ -15,20 +15,28 @@ import java.util.*
     <meta name="description" content="..." />
     <meta name="keywords" content="..." />
 
-    <link rel="stylesheet" media="screen,projection" type="text/css" href="/stylesheets/reset.css" />
-    <link rel="stylesheet" media="screen,projection" type="text/css" href="/stylesheets/main.css" />
+
+
+    <link rel="stylesheet" media="screen,projection" type="text/css" href="<%= stylesheet_path('reset.css') %>" />
+    <link rel="stylesheet" media="screen,projection" type="text/css" href="<%= stylesheet_path('main.css') %>" />
     <!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="/css/main-msie.css" /><![endif]-->
-    <link rel="stylesheet" media="screen,projection" type="text/css" href="/stylesheets/style.css" />
-    <link rel="stylesheet" media="print" type="text/css" href="/stylesheets/print.css" />
+    <link rel="stylesheet" media="screen,projection" type="text/css" href="<%= stylesheet_path('style.css') %>" />
+    <link rel="stylesheet" media="print" type="text/css" href="<%= stylesheet_path('print.css') %>" />
 	
+		<link rel="stylesheet" type="text/css" href="/stylesheets/ui.slider.extras.css" />
+		<link rel="stylesheet" type="text/css" href="/stylesheets/redmond/jquery-ui-1.7.1.custom.css" />
+		
+
 		<%= stylesheet_link_tag 'jquery-ui' %>  
 		
 	  <%= javascript_include_tag "jquery" %>
 	  <%= javascript_include_tag "jquery.validate" %>
 		<%= javascript_include_tag "jquery-ui" %>
-	  <%= javascript_include_tag "buy" %>
 
-    <title><%= page_title != null ? page_title+' | ' : '' %>Motocash</title>
+		<%= javascript_include_tag "selectToUISlider.jQuery" %>
+		<%= javascript_include_tag "scripts" %>
+		
+    <title><%= page_title != null ? page_title+' | ' : '' %>GarageApp</title>
 </head>
 
 <body>
@@ -61,6 +69,7 @@ import java.util.*
 
         
         <!-- Search -->
+		
         <div id="search" class="box">
             <form action="#" method="get">
                 <div class="box">
@@ -68,7 +77,9 @@ import java.util.*
                     <div id="search-submit"><input type="image" src="/design/search-submit.gif" value="OK" /></div>
                 </div>
             </form>
-        </div> <!-- /search -->
+        </div> 
+
+<!-- /search -->
 
     <hr class="noscreen" />
     </div> <!-- /tray -->

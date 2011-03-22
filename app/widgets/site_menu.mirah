@@ -125,7 +125,11 @@ end
     
     def active? 
       if url.split('/').length > 3
-        @root.e.request.getRequestURI.endsWith(url.split('/', 4)[3])
+        #puts "------"
+        #puts url.split('/', 4)[3]
+        #puts @root.e.request.getRequestURI
+        @root.e.request.getRequestURI.endsWith(url.split('/', 4)[3]) or
+         @root.e.request.getRequestURI.startsWith("/"+url.split('/', 4)[3])
       else
          @root.e.request.getRequestURI.equals('/')
       end

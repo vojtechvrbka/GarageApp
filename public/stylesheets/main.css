@@ -152,6 +152,11 @@ form dd {
   display:block;
 }
 
+.noscreen {
+  display:none;
+  
+}
+
 /* ====== Dialog ===== */
 
 #overlay {

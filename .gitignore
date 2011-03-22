@@ -63,3 +63,4 @@ WEB-INF/classes/utils/Distance.class
 WEB-INF/classes/utils/Unit.class
 WEB-INF/classes/widgets/MenuItem.class
 WEB-INF/classes/widgets/SiteMenu.class
+/WEB-INF/classes/

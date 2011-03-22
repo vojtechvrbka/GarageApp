@@ -25,6 +25,7 @@ class  VehicleController < PublicController
     		<th>Model</th>
     		<th>Exact</th>
     		<th>&nbsp;</th>
+    		<th>&nbsp;</th>
       </tr>"
       
     @vehicles.each do |vehicle|
@@ -35,6 +36,7 @@ class  VehicleController < PublicController
     	<td>#{h(vehicle.model.name)}</td>
     	<td>#{h(vehicle.model_exact)}</td>
     	<td> <a class='button' href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a> </td>
+    	<td> <a class='button' href='/stats/?vehicle=#{vehicle.id}'>stats</a> </td>
     </tr>"
       end
       html += '</table>'

@@ -2,9 +2,10 @@ import com.google.appengine.ext.mirah.db.*
 import com.google.appengine.api.datastore.*;
 import dubious.*
 import ext.*
+import java.util.*
 
 
-class NoteEntry < Model
+class Note < Model
   property :user_id,    Integer
   property :vehicle_id,    Integer
   
@@ -12,9 +13,6 @@ class NoteEntry < Model
   property :date, Integer
   property :type,    String
   property :odometer,  Integer
-  
-  property :quantity,   Double
-  property :fuel_sort, String
   
   property :price,    Double
   property :price_currency,    String
@@ -25,5 +23,25 @@ class NoteEntry < Model
   def id 
     key.getId
   end
+ 
+  def url_id    
+    if key != null
+      String.valueOf(key.getId)
+    else
+      'new'
+    end
+  end
+ 
   
+  def self.blank
+    n = new
+    n.user_id = 0
+    n.vehicle_id = 0
+    n.date = Date.new.getTime()
+    n.type = ""
+    n.odometer = 0
+    n.price = 0
+    n.note = ""
+    n
+  end
 end

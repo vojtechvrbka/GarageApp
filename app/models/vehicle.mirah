@@ -74,6 +74,17 @@ class Vehicle < Model
     end
   end
   
+  def title:String
+    maker.name +" "+ model.name + " "+ model_exact
+  end
+  
+  
+  def to_string
+    <<-HTML
+      #{type_id} #{maker_id}
+    HTML
+  end
+  
   def self.blank
     v = new
     v.type_id = 0    

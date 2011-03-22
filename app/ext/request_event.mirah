@@ -230,14 +230,7 @@ class RequestEvent
     @redirected_to
   end
   
-  
-  
-  
-  
-  
-  
-  
-  
+
   
   
   
@@ -387,6 +380,7 @@ class RequestEvent
       @request.getParameter(param)
     end
   end
+
   
   def long(param:String):long
     if @is_multipart

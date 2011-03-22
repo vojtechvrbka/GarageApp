@@ -5,26 +5,109 @@ import ext.*
 import java.util.*
 
 class Fueling < Model
+  property :user_id,    Integer
   property :vehicle_id,    Integer
   
   /* basic */
   property :date, Integer
-  property :type,    String
+  property :type,   Integer
+  
+  property :fueling_type, Integer
+  property :cost_type, Integer
+  
+  
   property :odometer,  Integer
+  property :trip, Integer
+  
+  property :fuelsort, Integer
   
   property :quantity,   Double
-  property :fuel_unit, String
+  property :quantity_unit, String
   
   property :quantity_main,   Double
   property :fuel_unit_main, String  
   
   property :price,    Double
   property :price_currency,    String
-  
+ 
   property :note,    String
+  
+  property :tires,    Integer
+  property :driving,    Integer
+  property :route_motorway,    Integer
+  property :route_city,    Integer
+  property :route_country_roads,    Integer
+  property :ac,    Integer
+  property :trailer,    Integer
+  
+
   
   def id 
     key.getId
+  end
+
+  def day
+    TimeHelper.at(date).day_of_epoch
+  end
+  
+  def month
+    TimeHelper.at(date).month_of_epoch
+  end
+  
+  def self.TYPE_FUELING; 1;end
+  def self.TYPE_COST; 2;end
+  
+  def self.FUELING_TYPE_FULL; 1 ;end
+  def self.FUELING_TYPE_PARTLY_FULL; 2 ;end    
+  def self.FUELING_TYPE_FIRST; 3 ;end    
+  def self.FUELING_TYPE_INVALID; 4 ;end    
+      
+  
+  def self.TIRES_SUMMER; 11;end
+  def self.TIRES_WINTER; 12;end
+  def self.TIRES_ALL_YEAR; 13;end
+
+  def self.DRIVING_MODERATE; 21;end
+  def self.DRIVING_NORMAL; 22;end
+  def self.DRIVING_FAST; 23;end
+        
+
+  def fuelsort_title
+    #tank
+  /*  
+    1 - Diesel
+    2 - Gasoline
+    3 - LPG
+    4 - CNG
+    5 - Electricity
+    
+    
+    # 1 diesel
+    2 - Biodiesel
+    1 - Diesel
+    4 - Premium Diesel
+    3 - Vegetable oil
+
+    # 2 Gasoline
+    15 Bio-alcohol
+    20 E10
+    6 Normal gasoline
+    9 Premium Gasoline 100
+    18 Premium Gasoline 95
+    8 SuperPlus gasoline
+    7 Super gasoline
+    16 Two-stroke
+
+    # 3 LPG
+    12 LPG
+
+    # 4 CNG
+    13 CNG H
+    14 CNG L
+
+    # 5 Electricity
+    19 Electricity
+*/
   end
   
   def url_id    
@@ -38,10 +121,10 @@ class Fueling < Model
   def self.blank
     fe = new
     fe.date = Date.new.getTime()
-    fe.type = ''
+    fe.type = Fueling.TYPE_FUELING
     fe.odometer = 0
     fe.quantity = 0
-    fe.fuel_unit = ''
+#    fe.fuel_unit = ''
     fe.price = 0
     fe.price_currency = ''
     fe.note = ''

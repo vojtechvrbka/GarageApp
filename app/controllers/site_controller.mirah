@@ -36,6 +36,11 @@ class SiteController < PublicController
     main_erb
   end
   
+  def costs_notes
+    @page_content = nest  NoteController.new
+    main_erb
+  end
+  
   def stats
     @page_content = nest StatsController.new
     main_erb

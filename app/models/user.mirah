@@ -68,9 +68,8 @@ class User < Model
     end
   end
  
-  def self.register(name:String, email:String, password:String)
+  def self.register(email:String, password:String)
     user = new
-    user.name = name
     user.email = email
     user.password = password
     user 
@@ -89,10 +88,10 @@ class User < Model
       if user.password_hash.equals(user.hash(pass, user.salt))
         user
       else
-        raise ClientException.new('Heslo nesouhlasí.')
+        raise ClientException.new('Incorrect Email or Password.')
       end
     else
-      raise ClientException.new('Zákazník s tímto emailem není registrován v databázi.')
+      raise ClientException.new('Incorrect Email or Password.')
     end
   end
   
@@ -149,9 +148,8 @@ class User < Model
   end
   
   def validate(); returns void
-    validate_name || (raise ClientException.new('Zadejte prosím své jméno.'))
-    validate_email || (raise ClientException.new('Špatný formát emailové adresy.'))
-    validate_password || (raise ClientException.new('Prosím zadejte alespoň šestimístné heslo.'))
+    validate_email || (raise ClientException.new('The value entered is not a valid email address.'))
+    validate_password || (raise ClientException.new('Password is a required field.'))
   end  
   
   def save
@@ -180,14 +178,6 @@ class User < Model
     c
   end
   
-  def self.petr
-    c = User.new
-    c.name = 'Petr Andrýsek'
-    c.password = 'secret'
-    c.email = 'petr.andrysek@gmail.com'
-    c.save
-    c
-  end  
 end
 
 
