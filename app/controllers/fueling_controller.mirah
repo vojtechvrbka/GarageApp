@@ -111,8 +111,7 @@ class  FuelingController < PublicController
       html = "<h2> My fueling entries</h2>
 
       <div>
-      	Type: #{h(@vehicle.type.name)} <br>
-      	Maker: #{h(@vehicle.maker.name)} <br>
+      	Make: #{h(@vehicle.maker.name)} <br>
       	Model: #{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}<br>
       	Avg consumption #{@consumption}
       </div>"
@@ -194,9 +193,9 @@ class  FuelingController < PublicController
                              value(@fueling.quantity_unit).to_s
                              
     price_currency_select  = Element.select('fueling[price_currency]').
-                             option("usd", "USD").
-                             option("eur", "EUR").
-                             option("kc", "Kč").
+                             option("USD", "USD").
+                             option("EUR", "EUR").
+                             option("KC", "Kč").
                              value(@fueling.price_currency).to_s
               
     tires_summer_checked = @fueling.tires == Fueling.TIRES_SUMMER ? 'checked="checked"' : '' 
@@ -250,7 +249,7 @@ class  FuelingController < PublicController
       
       <dl>
         <dt><label for="note">Note:</label></dt>
-    		<dd><input type="text" id="note" name="fueling[note]" value="#{h(@fueling.note)}"></dd>
+    		<dd><textarea id="note" name="fueling[note]" style="width:200px;height:40px;">#{h(@fueling.note)}</textarea></dd>
       </dl>
      	
      	<h3 style="clear:left;padding-top:20px;"> Conditions </h3>

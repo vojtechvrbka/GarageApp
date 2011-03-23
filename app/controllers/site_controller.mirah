@@ -78,7 +78,7 @@ class SiteController < PublicController
 
 
   def get_makers
-    @vehicle_makers = VehicleMaker.all.type_id(Long.parseLong(params[:type_id])).run
+    @vehicle_makers = VehicleMaker.all.run
 
     makers = "<select name='vehicle[maker_id]' onchange=\"get_models('vehicle_model',this.value);\">"
     makers += "<option value='0'>-- choose --</option>"

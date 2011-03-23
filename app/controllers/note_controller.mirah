@@ -9,27 +9,7 @@ class  NoteController < PublicController
   
   
   def index
-    vehicle_id = Integer.parseInt(params[:vehicle])
-    if @vehicle = Vehicle.get(vehicle_id)  
-      if Vehicle.get(vehicle_id).user_id == user.id
-        if @fuelings = Fueling.all.vehicle_id(vehicle_id).sort(:date).run                            
-          @emtry = false
-        else
-          @empty = true
-        end        
-        null
-      else
-        # not my vehicle
-        redirect_to :index        
-        null
-      end
-    else 
-      # vehicle not exists
-      redirect_to :index
-      null
-    end
-
-    list_erb
+    redirect_to :index
   end
   
   
@@ -56,116 +36,39 @@ class  NoteController < PublicController
     edit_erb
   end  
   
-  def save
-    if params.peek == null || params.peek.equals("new")
-      f = Fueling.new
-      f.vehicle_id = Integer.parseInt(params[:vehicle])
-      f
-    else      
-      f = Fueling.get(params.id)
-    end
-      f.type = Fueling.TYPE_COST
-    #  f.quantity = 1
-      
-    if params.has(:action) && params[:action].equals(:delete)
-      f.delete
-      null
-    else
-      if params.multipart?
-        f.update(params.multipart_for(:note))
-      else
-        f.update(params.for(:note))
-      end
-      f.save      
-      null
-    end
-    
-    redirect_to '/fueling/?vehicle='+params[:vehicle]
-  end 
-  
-  def remove
-    @fueling = Fueling.get(params.id)
-    @fueling.delete
-    redirect_to '/fueling/?vehicle='+params[:vehicle]
-  end  
-  
-  def show_erb
-  
-  end
-  
-  def list_erb
-      html = "<h2> My costs notes</h2>
 
-      <div>
-      	Type: #{h(@vehicle.type.name)} <br>
-      	Maker: #{h(@vehicle.maker.name)} <br>
-      	Model: #{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}<br>
-      </div>"
 
-      if !@empty
-        html += "
-        <table style='width:100%;'>
-        <tr>
-          <th>Date</th>
-      		<th>Odometer</th>
-      		<th>Fueling</th>
-      		<th>Price</th>
-        </tr>"
-        
-        
-        @fuelings.each do |n|
-          d = TimeHelper.at(n.date)
-          
-          html += "
-          <tr>
-            <td>#{d.month}/#{d.month_day}/#{d.year}</td>
-          	<td>#{h(Double.toString(n.odometer))} Km</td>
-          	<td>#{h(n.note)}</td>
-          	<td>#{h(Double.toString(n.price))}</td>
-          	<td> <a class='button'  href='/costs_notes/edit/#{n.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-          	<td> <a class='button'  href='/costs_notes/remove/#{n.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
-          </tr>"
-        end
-        html += "</table>"
-        null
-      else
-        html += "<div> No costs or notes </div>"
-        null
-      end
-      html += "<a class='button'  href='/costs_notes/new?vehicle=#{params[:vehicle]}'>Add fueling entry</a>"
-      html
-  end
+  
   
   def edit_erb
     
 
     price_currency_select  = Element.select('note[price_currency]').
-                             option("usd", "USD").
-                             option("eur", "EUR").
-                             option("kc", "Kč").
+                             option("USD", "USD").
+                             option("EUR", "EUR").
                              value(@fueling.price_currency).to_s
-    type_select =  Element.select('note[cost_type]').
-                            option("1", "Maintenance").
-                            option("2", "Repair").
-                            option("3", "Change tires").
-                            option("4", "Change oil").
-                            option("5", "Insurance").
-                            option("6", "Tax").
-                            option("7", "Supervisory board").
-                            option("8", "Tuning").
-                            option("9", "Accessories").
-                            option("10", "Purchase price").
-                            option("11", "Miscellaneous").
-                            option("12", "Care").
-                            option("13", "Payment").
-                            option("14", "Registration").
-                            option("15", "Financing").
-                            option("16", "Refund").
-                            option("17", "Fine").
-                            option("18", "Parking tax").
-                            option("19", "Toll").
-                            option("20", "Spare parts").
-                            value(@fueling.cost_type).to_s
+     type_select =  Element.select('note[cost_type]').
+                             option(Fueling.COST_MAINTENANCE, "Maintenance").
+                             option(Fueling.COST_REPAIR, "Repair").
+                             option(Fueling.COST_CHANGE_TIRES, "Change tires").
+                             option(Fueling.COST_CHANGE_OIL, "Change oil").
+                             option(Fueling.COST_INSURANCE, "Insurance").
+                             option(Fueling.COST_TAX, "Tax").
+                             option(Fueling.COST_SUPERVISORY_BOARD, "Supervisory board").
+                             option(Fueling.COST_TUNING, "Tuning").
+                             option(Fueling.COST_ACCESSORIES, "Accessories").
+                             option(Fueling.COST_PURCHASE_PRICE, "Purchase price").
+                             option(Fueling.COST_MISCELLANEOUS, "Miscellaneous").
+                             option(Fueling.COST_CARE, "Care").
+                             option(Fueling.COST_PAYMENT, "Payment").
+                             option(Fueling.COST_REGISTRATION, "Registration").
+                             option(Fueling.COST_FINANCING, "Financing").
+                             option(Fueling.COST_REFUND, "Refund").
+                             option(Fueling.COST_FINE, "Fine").
+                             option(Fueling.COST_PARKING_TAX, "Parking tax").
+                             option(Fueling.COST_TOLL, "Toll").
+                             option(Fueling.COST_SPARE_PARTS, "Spare parts").
+                             value(@fueling.cost_type).to_s
                                       
      <<-HTML
     <h1>#{@new ? 'Add note/cost entry' : 'Edit note/cost entry'}</h1>

@@ -5,7 +5,6 @@ import ext.*
 
 
 class VehicleMaker < Model
-  property :type_id, Integer
   property :name,    String
   
   def id 

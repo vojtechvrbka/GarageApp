@@ -40,8 +40,15 @@ class MigrationController < MyController
   end
   
   def dev_import_spritmonitor
-
-    import_vehicle(178505)
+    from = 178002
+/*
+    200.times { 
+      import_vehicle(from)
+      from += 1
+    }
+*/    
+    from = 178002
+    import_vehicle(from)
     "jo"
   end
   
@@ -49,11 +56,18 @@ class MigrationController < MyController
   def import_vehicle(sprit_id:int) 
 
     url = "http://www.spritmonitor.de/en/detail/#{sprit_id}.html"
-    doc = Jsoup.connect(url).get();
+    begin
+      doc = Jsoup.connect(url).get();
+    rescue 
+      return "false"
+    end
+
 
     # Ford - Focus - Focus II Turnier 1.6 TDCi
     # Diesel, year 2006, 66 kW (90 PS), manual User: ralf1982 - f?hrt immer mit Abblendlicht - im Sommer Alufelgen mit Michelin Energy Safer 195/65 R15
-
+      if doc.getElementsByTag("h1").first.text.equals('Error')
+        return ""
+      end
 
       details = doc.getElementById("vehicledetails")
       h1 = details.getElementsByTag("h1").first.text
@@ -62,13 +76,13 @@ class MigrationController < MyController
 
 
       vehicle = Vehicle.new
-
+      vehicle.type = Vehicle.TYPE_AUTOMOBILE
+      
       # vyrobce
       if make = VehicleMaker.all.name(titles[0].trim).first
         null
       else
         make = VehicleMaker.new
-        make.type_id = 0
         make.name = titles[0].trim
         make.save
         null
@@ -88,9 +102,53 @@ class MigrationController < MyController
       vehicle.model_id = model.id    
 
       # exact name
-
-      vehicle.model_exact = titles[2].trim
-
+      begin
+        vehicle.model_exact = titles[2].trim
+      rescue
+        null
+      end
+      
+      # fuel type
+      if info[0].trim.equals('Diesel')
+        vehicle.fuel_type = Vehicle.FUEL_DIESEL
+      elsif info[0].trim.equals('Gasoline')
+        vehicle.fuel_type = Vehicle.FUEL_GASOLINE
+      elsif info[0].trim.equals('LPG')
+        vehicle.fuel_type = Vehicle.FUEL_LPG
+      elsif info[0].trim.equals('CNG')
+        vehicle.fuel_type = Vehicle.FUEL_CNG
+      elsif info[0].trim.equals('Electricity')
+        vehicle.fuel_type = Vehicle.FUEL_ELECTRICITY
+      end  
+        
+      #year
+      vehicle.year = Integer.parseInt(info[1].replace('year ','').trim)
+      #engine power
+      begin
+        gear = info[3]
+      rescue
+        begin
+          gear = info[2]
+        rescue
+          gear = info[1]
+        end
+      end
+      
+      begin
+        vehicle.engine_power = Double.parseDouble(info[2].split(' ')[0].trim)
+      rescue
+        gear = info[2]
+      end
+      
+      
+      
+      #gearing
+      if gear.trim.startsWith('manual')
+        vehicle.gearing = Vehicle.GEARING_MANUAL
+      elsif gear.trim.startsWith('automatic')
+        vehicle.gearing = Vehicle.GEARING_AUTOMATIC
+      end
+      
       vehicle.save
 
       puts "h1"
@@ -106,13 +164,17 @@ class MigrationController < MyController
         i+=1
       }
     
-    
+    "true"
   end
   
   
   def import_fuelings(url:String,vehicle_id:long)
-    doc = Jsoup.connect(url).get();
-    
+    begin
+      doc = Jsoup.connect(url).get();
+    rescue 
+      return false
+    end
+  
     if table = doc.getElementsByClass('itemtable').first
       true
     else
@@ -125,6 +187,7 @@ class MigrationController < MyController
       
       f = Fueling.blank
       f.vehicle_id = vehicle_id
+      f.fueling_type = Fueling.FUELING_TYPE_FULL
       cols = Element(row).getElementsByTag("td")
       cols.each do |c| # sloupce
         col = Element(c)
@@ -144,12 +207,24 @@ class MigrationController < MyController
           end
           null
         elsif col.attr('class').equals('fuelkmpos') || col.attr('class').equals('costkmpos') 
-          f.odometer = Integer.parseInt(col.text.replace('.',''))
+          if !col.text.equals('')
+            f.odometer = Integer.parseInt(col.text.replace('.',''))
+            null
+          else
+            f.fueling_type = Fueling.FUELING_TYPE_INVALID
+            null
+          end
           null
         elsif col.attr('class').equals('trip')
-          f.trip = int(Double.parseDouble(col.text.replace('.','').replace(',','.')))
+          if !col.text.equals('')
+            f.trip = int(Double.parseDouble(col.text.replace('.','').replace(',','.')))
+            null
+          else
+            f.fueling_type = Fueling.FUELING_TYPE_INVALID
+            null
+          end
           null
-        elsif col.attr('class').equals('quantity')
+        elsif !col.text.equals('') and col.attr('class').equals('quantity')
           f.quantity = Double.parseDouble(col.text.replace('.','').replace(',','.'))
           null
         elsif col.attr('class').equals('fuelsort')
@@ -161,7 +236,13 @@ class MigrationController < MyController
         elsif col.attr('class').equals('tire') 
           if img = col.getElementsByTag('img').first
              tmpn =  Integer.parseInt(img.attr('src').replace('pics/vdetail/tire_','').replace('.png',''))
-             f.tires = 10+tmpn        
+             if tmpn == 1
+               f.tires = Fueling.TIRES_SUMMER
+             elsif tmpn == 2
+               f.tires = Fueling.TIRES_SUMMER
+             elsif tmpn == 3
+               f.tires = Fueling.TIRES_ALL_YEAR
+             end
           end
           null
         elsif col.attr('class').equals('street')
@@ -190,20 +271,78 @@ class MigrationController < MyController
             end
           end          
           null
-        elsif col.attr('class').equals('fuelprice') 
+        elsif !col.text.equals('') and col.attr('class').equals('fuelprice') 
+
           arr = col.attr('onmouseover').replace("showTooltip('",'').replace("')",'').split('<br/>')
           f.price = Double.parseDouble(arr[0].split(' ')[0].replace('.','').replace(',','.'))
           f.price_currency = arr[0].split(' ')[1]
+
           null
-        elsif  col.attr('class').equals('costprice')   
+        elsif !col.text.equals('') and col.attr('class').equals('costprice')   
           tmpt = col.attr('onmouseover').replace("showTooltip('",'').replace("')",'')
           f.price = Double.parseDouble(tmpt.split(' ')[0].replace('.','').replace(',','.'))
           f.price_currency = tmpt.split(' ')[1]
+
+          null
         elsif col.attr('class').equals('consumption')
           # spotreba
+          #if f.fueling_type == Fueling.FUELING_TYPE_INVALID
+          #  f.fueling_type = Fueling.FUELING_TYPE_FIRST
+          #end
+          null
+        elsif col.attr('class').equals('costname') and !col.text.trim.equals('')
+          cost = col.text.trim
+          if cost.equals('Maintenance')
+            f.cost_type = Fueling.COST_MAINTENANCE
+          elsif cost.equals('Repair')
+            f.cost_type = Fueling.COST_REPAIR
+          elsif cost.equals('Change tires')
+            f.cost_type = Fueling.COST_CHANGE_TIRES
+          elsif cost.equals('Change oil')    
+            f.cost_type = Fueling.COST_CHANGE_OIL
+          elsif cost.equals('Insurance')
+            f.cost_type = Fueling.COST_INSURANCE
+          elsif cost.equals('Tax')
+            f.cost_type = Fueling.COST_TAX
+          elsif cost.equals('Supervisory board')
+            f.cost_type = Fueling.COST_SUPERVISORY_BOARD
+          elsif cost.equals('Tuning')    
+            f.cost_type = Fueling.COST_TUNING
+          elsif cost.equals('Accessories')
+            f.cost_type = Fueling.COST_ACCESSORIES
+          elsif cost.equals('Purchase price')
+            f.cost_type = Fueling.COST_PURCHASE_PRICE
+          elsif cost.equals('Miscellaneous')
+            f.cost_type = Fueling.COST_MISCELLANEOUS
+          elsif cost.equals('Care')    
+            f.cost_type = Fueling.COST_CARE
+          elsif cost.equals('Payment')
+            f.cost_type = Fueling.COST_PAYMENT
+          elsif cost.equals('Registration')
+            f.cost_type = Fueling.COST_REGISTRATION
+          elsif cost.equals('Financing')    
+            f.cost_type = Fueling.COST_FINANCING
+          elsif cost.equals('Refund')
+            f.cost_type = Fueling.COST_REFUND
+          elsif cost.equals('Fine')
+            f.cost_type = Fueling.COST_FINE
+          elsif cost.equals('Parking tax')    
+            f.cost_type = Fueling.COST_PARKING_TAX
+          elsif cost.equals('Toll')
+            f.cost_type = Fueling.COST_TOLL  
+          elsif cost.equals('Spare parts')    
+            f.cost_type = Fueling.COST_SPARE_PARTS
+          end
+         
           null
         elsif col.attr('class').equals('fuelnote')
-
+          imgs = col.getElementsByTag('img')
+          imgs.each do |imgo|
+            img = Element(imgo)
+            if img.attr('src').equals('pics/vdetail/ac.png')
+              f.ac = 1
+            end
+          end
           null
         end
         
@@ -245,12 +384,8 @@ class MigrationController < MyController
   def dev_fill_data_for_localhost
     dev_flush_local_data()
     
-    t = VehicleType.new
-    t.name = 'Car'
-    t.save
-    
+
       m = VehicleMaker.new
-      m.type_id = t.id
       m.name = 'Audi'
       m.save
         
@@ -280,7 +415,6 @@ class MigrationController < MyController
         mo.save
         
       m = VehicleMaker.new
-      m.type_id = t.id
       m.name = 'BMW'
       m.save
       
@@ -306,7 +440,6 @@ class MigrationController < MyController
         mo.save
         
       m = VehicleMaker.new
-      m.type_id = t.id
       m.name = 'Volvo'
       m.save
       
@@ -330,12 +463,8 @@ class MigrationController < MyController
         mo.name = 'XC90' 
         mo.save
         
-    t = VehicleType.new
-    t.name = 'Motorbike'
-    t.save
 
       m = VehicleMaker.new
-      m.type_id = t.id
       m.name = 'Yamaha'
       m.save
 
@@ -355,7 +484,6 @@ class MigrationController < MyController
         mo.save
 
       m = VehicleMaker.new
-      m.type_id = t.id
       m.name = 'Suzuki'
       m.save
 
@@ -373,12 +501,7 @@ class MigrationController < MyController
         mo.maker_id = m.id
         mo.name = 'GSR' 
         mo.save
-        
-    ['Diesel','Gasoline','LPG','CNG','Electricity'].each do |n|     
-      f = FuelType.new     
-      f.name = n
-      f.save   
-    end      
+ 
         
     # u = User.register('Vojta', 'test', 'test')
     #   u.save

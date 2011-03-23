@@ -23,7 +23,6 @@ class  GarageController < PublicController
   def new
     @new = true
     @vehicle = Vehicle.blank
-    @vehicle_types = VehicleType.all.run
     @vehicle_makers = VehicleMaker.all.run
     @vehicle_models = VehicleModel.all.run
     self.page_title = 'Add/Edit Vehicle'
@@ -34,14 +33,16 @@ class  GarageController < PublicController
   def edit
     @new = false
     @vehicle = Vehicle.get(params.id)
-    if @vehicle.user_id == user.id
-      @vehicle_types = VehicleType.all.run
-      @vehicle_makers = VehicleMaker.all.type_id(@vehicle.type_id).run
+  #  if @vehicle.user_id == user.id
+
+      @vehicle_makers = VehicleMaker.all.run
       @vehicle_models = VehicleModel.all.maker_id(@vehicle.maker_id).run
       edit_erb
-    else
-      redirect_to :index
-    end
+    
+  #  else
+  #    redirect_to :index
+  #  end
+    
   end  
   
 
@@ -79,26 +80,18 @@ class  GarageController < PublicController
   end  
   
   def edit_erb
-    
-    type_select = "<select name='vehicle[type_id]' onchange=\"get_makers('vehicle_maker',this.value);\">"
-    type_select += "<option value='0'>-- choose --</option>";
-    @vehicle_types.each do |type|
-      selected = ( type.id == @vehicle.type_id ? 'selected="selected"' : '')
-      type_select += "<option value='#{type.id}' #{selected}>#{type.name}</option>"
-    end
-    type_select += "</select>";
 
-    if @vehicle.maker_id > 0
-      maker_select = "<select name='vehicle[maker_id]' onchange=\"get_models('vehicle_model',this.value);\">"
-      maker_select += "<option value='0'>-- choose --</option>";
-      @vehicle_makers.each do |maker|
-        selected = ( maker.id == @vehicle.maker_id ? 'selected="selected"' : '')
-        maker_select += "<option value='#{maker.id}' #{selected}>#{maker.name}</option>"
-      end
-      maker_select += "</select>";
-    else
-      maker_select = 'choose type first'
+    
+
+
+    maker_select = "<select name='vehicle[maker_id]' onchange=\"get_models('vehicle_model',this.value);\">"
+    maker_select += "<option value='0'>-- choose --</option>";
+    @vehicle_makers.each do |maker|
+      selected = ( maker.id == @vehicle.maker_id ? 'selected="selected"' : '')
+      maker_select += "<option value='#{maker.id}' #{selected}>#{maker.name}</option>"
     end
+    maker_select += "</select>";
+    
     
     if @vehicle.model_id > 0
       model_select = "<select name='vehicle[model_id]'>"
@@ -111,94 +104,99 @@ class  GarageController < PublicController
       model_select = 'choose maker first'
     end
     
-    @fuel_type = FuelType.all.run
-    fuel_type_select = "<select name='vehicle[fuel_type_id]'>"
-    @fuel_type.each do |fuel_type|
-      selected = (fuel_type.id == @vehicle.fuel_type_id ? 'selected="selected"' : '')
-      fuel_type_select += "<option value='#{fuel_type.id}' #{selected}>#{fuel_type.name}</option>"
-    end
-    fuel_type_select += "</select>"
 
+    type_select =  Element.select('vehicle[type]').
+                               option(Vehicle.TYPE_AUTOMOBILE, 'Automobile').
+                               option(Vehicle.TYPE_TWO_WHEELER, 'Two-wheeler').
+                               option(Vehicle.TYPE_COMMERCIAL, 'Commercial vehicle').
+                               option(Vehicle.TYPE_QUAD, 'Quad').
+                               value(@vehicle.type).to_s
 
-    fuel_unit_select =  Element.select("vehicle[fuel_unit]").
-                               option("l", "liter").
-                               option("us.gal", "US Gallon").
-                               option("imp.gal", "Imperial Gallon").
-                               value(@vehicle.fuel_unit).to_s    
+    fuel_type_select =  Element.select("vehicle[fuel_type]").
+                               option(Vehicle.FUEL_DIESEL, 'Diesel').
+                               option(Vehicle.FUEL_GASOLINE, 'Gasoline').
+                               option(Vehicle.FUEL_LPG, 'LPG').
+                               option(Vehicle.FUEL_CNG, 'CNG').
+                               option(Vehicle.FUEL_ELECTRICITY, 'Electricity').
+                               value(@vehicle.fuel_type).to_s
                                
-    engine_power_unit_select =  Element.select("vehicle[engine_power_unit]").
+    engine_power_unit_select =  Element.select("engine_power_unit").
                                option("kw", "kW").
                                option("ps", "ps").
                                option("hp", "hp").
-                               value(@vehicle.engine_power_unit).to_s
+                               value('kw').to_s
     
     odometer_unit_select =  Element.select("vehicle[odometer_unit]").
                                option("km", "kilometers").
                                option("m", "miles").
                                value(@vehicle.odometer_unit).to_s     
-
-
+    gearing_select =  Element.select("vehicle[gearing]").
+                              option(Vehicle.GEARING_MANUAL , 'manual').
+                              option(Vehicle.GEARING_AUTOMATIC, 'automatic').
+                              value(@vehicle.gearing).to_s
+                                 
     <<-HTML
     <h1>#{@new ? 'Create vehicle' : 'Edit vehicle'}</h1>
 
     <form method="post" action="/garage/save/#{String.valueOf(@vehicle.url_id)}">
       <h2> Basic information </h2>
       <dl>
-        <dt><label for="type">Type:</label></dt>
+        <dt><label for="type">Vehicle type</label></dt>
     		<dd>#{type_select}</dd>
       </dl>
       <dl>
-        <dt><label for="maker">Maker:</label></dt>
+        <dt><label for="maker">Make</label></dt>
     		<dd id="vehicle_maker">#{maker_select}</dd>
       </dl>
       <dl>
-        <dt><label for="model">Model:</label></dt>
+        <dt><label for="model">Model</label></dt>
     		<dd id="vehicle_model">#{model_select}</dd>
       </dl>
       <dl>
-        <dt><label for="model_exact">Model exact:</label></dt>
+        <dt><label for="fuel_type">Fuel type</label></dt>
+    		<dd>#{fuel_type_select}</dd>
+      </dl>
+      
+      <dl>
+        <dt><label for="model_exact">Exact modelname</label></dt>
     		<dd><input type="text" id="model_exact" name="vehicle[model_exact]" value="#{h(@vehicle.model_exact)}"></dd>
       </dl>
       
+      <dl>
+        <dt><label for="gearing">Gearing type</label></dt>
+    		<dd>#{gearing_select}</dd>
+      </dl>
 
+      
       <dl>
-        <dt><label for="fuel_type">Fuel type:</label></dt>
-    		<dd>#{fuel_type_select}</dd>
-      </dl>
-      <dl>
-        <dt><label for="fuel_sort">Fuel unit:</label></dt>
-    		<dd>#{fuel_unit_select}</dd>
-      </dl>
-      <dl>
-        <dt><label for="year">Year:</label></dt>
-    		<dd><input type="text" id="year" name="vehicle[year]" value="#{h(@vehicle.year)}"></dd>
+        <dt><label for="year">Year of manufacture</label></dt>
+    		<dd><input type="text" id="year" name="vehicle[year]" value="#{h(Long.toString(@vehicle.year))}"></dd>
       </dl>
       
       <dl>
-        <dt><label for="engine_power">Engine power:</label></dt>
+        <dt><label for="engine_power">Engine power</label></dt>
     		<dd><input type="text" id="engine_power" name="vehicle[engine_power]" value="#{h(Double.toString(@vehicle.engine_power))}"> 
     		    #{engine_power_unit_select}
     		  </dd>
       </dl>
+      
+      <br style="clear:both;" />
+      
+      <h2>Optional data</h2>
       <dl>
-        <dt><label for="odometer">Odometer:</label></dt>
-    		<dd><input type="text" id="odometer" name="vehicle[odometer]" value="#{h(Long.toString(@vehicle.odometer))}">
-    		  #{odometer_unit_select}
-    		  </dd>
+        <dt><label for="odometer">Odometer in</label></dt>
+    		<dd>#{odometer_unit_select} </dd>
       </dl>
       
       
       <dl>
-        <dt><label for="tank_capacity">Tank capacity:</label></dt>
+        <dt><label for="tank_capacity">Tank capacity</label></dt>
     		<dd><input type="text" id="tank_capacity" name="vehicle[tank_capacity]" value="#{h(Double.toString(@vehicle.tank_capacity))}"></dd>
       </dl>
+
       <dl>
-        <dt><label for="license_number">License number:</label></dt>
-    		<dd><input type="text" id="license_number" name="vehicle[license_number]" value="#{h(@vehicle.license_number)}"></dd>
-      </dl>
-      <dl>
-        <dt><label for="note">Note:</label></dt>
-    		<dd><input type="text" id="note" name="vehicle[note]" value="#{h(@vehicle.note)}"></dd>
+        <dt><label for="note">Note</label></dt>
+    		<dd><textarea id="note" name="vehicle[note]" style="width:200px;height:80px;">#{h(@vehicle.note)}</textarea></dd>
       </dl>
      	<dl>
     		<dt>
@@ -219,7 +217,6 @@ class  GarageController < PublicController
     html += "
     <table>
       <tr>
-        <th>Type</th>
     		<th>Maker</th>
     		<th>Model</th>
     		<th>Exact</th>
@@ -232,7 +229,6 @@ class  GarageController < PublicController
       @vehicles.each do |vehicle|
       html += "
       <tr>
-        <td>#{h(vehicle.type.name)}</td>
     	  <td>#{h(vehicle.maker.name)}</td>
     	  <td>#{h(vehicle.model.name)}</td>
     	  <td>#{h(vehicle.model_exact)}</td>
@@ -252,70 +248,6 @@ class  GarageController < PublicController
       html += "Please, Login first"
     end
   end
-  
-  /*
-  def show_erb
-    <<-HTML
-    <p>
-      <b>Title:</b>
-      #{h(Long.toString(@vehicle.maker_id))}
-    </p>
 
-    <p>
-      <b>Type:</b>
-      #{h(Long.toString(@vehicle.type_id))}
-    </p>
-    <p>
-      <b>Maker:</b>
-      #{h(Long.toString(@vehicle.maker_id))}
-    </p>
-    <p>
-      <b>Model:</b>
-      #{h(Long.toString(@vehicle.model_id))}
-    </p>
-    <p>
-      <b>Exact model:</b>
-      #{h(@vehicle.model_exact)}
-    </p>
-    <p>
-      <b>Fuel type:</b>
-      #{h(@vehicle.fuel_type.name)}
-    </p>
-    <p>
-      <b>fuel sort:</b>
-      #{h(@vehicle.fuel_unit)}
-    </p>
-    <p>
-      <b>Year:</b>
-      #{h(@vehicle.year)}
-    </p>
-
-    <p>
-      <b>Engine power:</b>
-      #{h(Double.toString(@vehicle.engine_power))}
-    </p>
-
-    <p>
-      <b>Odometer:</b>
-      #{h(Long.toString(@vehicle.odometer))}
-    </p>
-
-    <p>
-      <b>Tank capacity:</b>
-      #{h(Double.toString(@vehicle.tank_capacity))}
-    </p>
-
-    <p>
-      <b>License number:</b>
-      #{h(@vehicle.license_number)}
-    </p>
-
-    <p>
-      <b>Note:</b>
-      #{h(@vehicle.note)}
-    </p>
-    HTML
-  end
-  */
   
 end

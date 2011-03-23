@@ -55,22 +55,49 @@ class Fueling < Model
   end
   
   def self.TYPE_FUELING; 1;end
-  def self.TYPE_COST; 2;end
+  def self.TYPE_COST;    2;end
   
-  def self.FUELING_TYPE_FULL; 1 ;end
-  def self.FUELING_TYPE_PARTLY_FULL; 2 ;end    
-  def self.FUELING_TYPE_FIRST; 3 ;end    
-  def self.FUELING_TYPE_INVALID; 4 ;end    
+  def self.FUELING_TYPE_FULL;        11 ;end
+  def self.FUELING_TYPE_PARTLY_FULL; 12 ;end    
+  def self.FUELING_TYPE_FIRST;       13 ;end    
+  def self.FUELING_TYPE_INVALID;     14 ;end    
       
   
-  def self.TIRES_SUMMER; 11;end
-  def self.TIRES_WINTER; 12;end
-  def self.TIRES_ALL_YEAR; 13;end
+  def self.TIRES_SUMMER;   21;end
+  def self.TIRES_WINTER;   22;end
+  def self.TIRES_ALL_YEAR; 23;end
 
-  def self.DRIVING_MODERATE; 21;end
-  def self.DRIVING_NORMAL; 22;end
-  def self.DRIVING_FAST; 23;end
+  def self.DRIVING_MODERATE; 31;end
+  def self.DRIVING_NORMAL;   32;end
+  def self.DRIVING_FAST;     33;end
         
+
+
+
+  # cost types
+
+  def self.COST_MAINTENANCE  ; 101 ;end
+  def self.COST_REPAIR       ; 102 ;end
+  def self.COST_CHANGE_TIRES ; 103 ;end
+  def self.COST_CHANGE_OIL   ; 104 ;end
+  def self.COST_INSURANCE    ; 105 ;end
+  def self.COST_TAX          ; 106 ;end
+  def self.COST_SUPERVISORY_BOARD ; 107 ;end
+  def self.COST_TUNING       ; 108 ;end
+  def self.COST_ACCESSORIES  ; 109 ;end
+  def self.COST_MISCELLANEOUS ; 110 ;end
+  def self.COST_CARE         ; 111 ;end
+  def self.COST_PAYMENT      ; 112 ;end
+  def self.COST_REGISTRATION ; 113 ;end
+  def self.COST_FINANCING    ; 114 ;end
+  def self.COST_REFUND       ; 115 ;end
+  def self.COST_FINE         ; 116 ;end
+  def self.COST_PARKING_TAX  ; 117 ;end
+  def self.COST_TOLL         ; 118 ;end
+  def self.COST_SPARE_PARTS  ; 119 ;end
+  def self.COST_PURCHASE_PRICE ; 120 ;end
+  
+  
 
   def fuelsort_title
     #tank
