@@ -132,6 +132,8 @@ class  StatsController < PublicController
     @months_avg = LinkedHashMap.new
     @months_costs = LinkedHashMap.new
     
+    month_price_sum = 0.0
+    month_price_count = 0
     # keys = months.keys
    # ArrayHelper.sort(keys)
     from_epoch = TimeHelper.at_date(1,filter_from_month,filter_from_year).month_of_epoch
@@ -140,7 +142,7 @@ class  StatsController < PublicController
       if Integer(k).intValue >= from_epoch and Integer(k).intValue <= to_epoch
       sum=0.0; count=0;price = 0.0;
       ArrayList(months.get(k)).each do |it|
-        if Fueling(it).type == Fueling.TYPE_FUELING
+        if Fueling(it).type == Fueling.TYPE_FUELING and Fueling(it).fueling_type == Fueling.FUELING_TYPE_FULL
           count += 1
           sum += ( Fueling(it).quantity / Fueling(it).trip) * 100
         end
@@ -149,8 +151,14 @@ class  StatsController < PublicController
    #   puts "x-#{k}"
       @months_avg.put(k ,Double.new(sum/count))
       @months_costs.put(k ,Double.new(price))
+      
+      month_price_sum+= price
+      month_price_count+=1
     end
     end
+    
+    @month_price = month_price_sum / month_price_count
+    @km_price = 0
     
     # th = TimeHelper.new
        #  
@@ -264,12 +272,20 @@ class  StatsController < PublicController
         		</fieldset>         		
         	  <input type="submit" name="submit" value="Filter">        		
         	</form>
+      <h2>Basic</h2>    
+        <strong>Price per month</strong> #{@month_price} EUR<br />
+        <strong>Price per km</strong> #{@km_price} EUR <br />
+        <br />
+                
       <h2>Consumption</h2>    
 
       <div id="chart_div"></div>
       
-      <h2>Vehicle costs<h2>
+      <h2>Vehicle costs</h2>
       <div id="vehicle_costs"></div>
+      
+      <a class='button'  href='/fueling?vehicle=#{params[:vehicle]}'>Show fuelings</a>
+      
     HTML
   end
 

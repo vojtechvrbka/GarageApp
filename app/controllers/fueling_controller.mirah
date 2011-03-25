@@ -20,11 +20,15 @@ class  FuelingController < PublicController
           count = 0
           sum = 0.0
           fuelings.each do |f|
+            if f.fueling_type == Fueling.FUELING_TYPE_FULL and f.trip > 0
               sum += (f.quantity / f.trip) * 100  
               count += 1
+            end
             prev = f
           end
           @consumption = Double.toString(sum/count)          
+          puts sum
+          puts count
           
           @emtry = false
         else
@@ -108,12 +112,12 @@ class  FuelingController < PublicController
   
   def list_erb
   
-      html = "<h2> My fueling entries</h2>
-
+      html = "<h2>  #{h(@vehicle.maker.name)} #{h(@vehicle.model_exact)} fueling entries</h2>
+      <a class='button'  href='/stats?vehicle=#{params[:vehicle]}'>Show stats</a>
       <div>
       	Make: #{h(@vehicle.maker.name)} <br>
       	Model: #{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}<br>
-      	Avg consumption #{@consumption}
+      	Avg consumption #{h(@consumption)}
       </div>"
 
       if !@empty
@@ -137,16 +141,20 @@ class  FuelingController < PublicController
         cons = 0.0
         @fuelings.each do |f|
           d = TimeHelper.at(f.date)
-          cons = double(int( (f.quantity / f.trip) * 100 * 100 ))/100
+          if f.fueling_type == Fueling.FUELING_TYPE_FULL
+            cons = double(int( (f.quantity / f.trip) * 100 * 100 ))/100
+          else
+            cons = 0.0
+          end
           
           if f.type == Fueling.TYPE_FUELING
             html += "
             <tr class='fueling'>
               <td>#{d.print_date}</td>          	
-            	<td>#{h(Long.toString(f.odometer))} Km</td>
+            	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
             	<td>#{h(Double.toString(f.quantity))} l</td>
             	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
-            	<td>#{h(Double.toString(cons))} l/100 Km</td>
+            	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
             	<td> <a class='button'  href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
             	<td> <a class='button'  href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
             </tr>"
@@ -154,8 +162,8 @@ class  FuelingController < PublicController
               html += "
               <tr class='cost'>
                 <td>#{d.print_date}</td>
-              	<td>#{h(Long.toString(f.odometer))} Km</td>
-              	<td></td>
+              	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
+              	<td>#{f.cost_type_title}</td>
               	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
               	<td></td>
               	<td> <a class='button'  href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>

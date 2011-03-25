@@ -97,6 +97,30 @@ class Fueling < Model
   def self.COST_SPARE_PARTS  ; 119 ;end
   def self.COST_PURCHASE_PRICE ; 120 ;end
   
+  def cost_type_title
+    h = HashMap.new
+    h.put(Long.new(Fueling.COST_MAINTENANCE),'Maintenance')
+    h.put(Long.new(Fueling.COST_REPAIR), 'Repair')
+    h.put(Long.new(Fueling.COST_CHANGE_TIRES), 'Change tires')
+    h.put(Long.new(Fueling.COST_CHANGE_OIL), 'Change oil')
+    h.put(Long.new(Fueling.COST_INSURANCE), 'Insurance')
+    h.put(Long.new(Fueling.COST_TAX), 'Tax')
+    h.put(Long.new(Fueling.COST_SUPERVISORY_BOARD), 'Supervisory board')
+    h.put(Long.new(Fueling.COST_TUNING), 'Tuning')
+    h.put(Long.new(Fueling.COST_ACCESSORIES), 'Accessories')
+    h.put(Long.new(Fueling.COST_MISCELLANEOUS), 'Miscellaneous')
+    h.put(Long.new(Fueling.COST_CARE), 'Care')
+    h.put(Long.new(Fueling.COST_PAYMENT), 'Payment')
+    h.put(Long.new(Fueling.COST_REGISTRATION), 'Registration')
+    h.put(Long.new(Fueling.COST_FINANCING), 'Financing')
+    h.put(Long.new(Fueling.COST_REFUND), 'Refund')
+    h.put(Long.new(Fueling.COST_FINE), 'Fine')
+    h.put(Long.new(Fueling.COST_PARKING_TAX), 'Parking tax')
+    h.put(Long.new(Fueling.COST_TOLL), 'Toll')
+    h.put(Long.new(Fueling.COST_SPARE_PARTS), 'Spare parts')
+    h.put(Long.new(Fueling.COST_PURCHASE_PRICE), 'Purchase price')
+    String(h.get(Long.new(cost_type)))
+  end
   
 
   def fuelsort_title
