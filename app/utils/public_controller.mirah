@@ -27,14 +27,15 @@ class PublicController < MyController
 
   def menu_top
     if logged_in?
-      SiteMenu.new(params).
+      SiteMenu.new(params,'nav').
+           item('Homepage', '/').
            item('My garage', '/garage').
            item('My Stats', '/stats').
            item('Listing vehicles', '/vehicle').to_s
          
     else
-      SiteMenu.new(params).
-           item('Homepage', '/index').
+      SiteMenu.new(params,'nav').
+           item('Homepage', '/').
            item('Listing vehicles', '/vehicle').to_s
     end     
   end

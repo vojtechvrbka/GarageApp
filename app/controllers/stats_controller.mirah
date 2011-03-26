@@ -261,27 +261,43 @@ class  StatsController < PublicController
       		.ui-slider {clear: both; top: 20px; padding:0 10px 0 10px;}
       	</style> 
 
-        <h1>#{@vehicle.title} stats</h1>
+
+        <h2 class="ribbon full">Stats of #{@vehicle.maker.name} #{@vehicle.model_exact} <span>Owner is <a href="" style="color:white">username</a></span></h2>
+            <div class="triangle-ribbon"></div>
+            <br class="cl" />
         
-        <form action="" method="post" > 
+        <form action="" method="post" class="stats_filter"> 
         		<fieldset style="height:120px;"> 
         			<label for="valueA">Between</label> 
               #{@date_select_from}
         			<label for="valueB">and</label> 
               #{@date_select_to}
         		</fieldset>         		
-        	  <input type="submit" name="submit" value="Filter">        		
+        		<button class="" type="submit">  Filter  </button>
         	</form>
-      <h2>Basic</h2>    
+      
+      <br class="cl" />  	
+      <h2 class="ribbon ">Basic</h2>
+        <div class="triangle-ribbon"></div>
+        <br class="cl" />
+        
         <strong>Price per month</strong> #{@month_price} EUR<br />
         <strong>Price per km</strong> #{@km_price} EUR <br />
         <br />
                 
-      <h2>Consumption</h2>    
+    <br class="cl" />    
+    <h2 class="ribbon ">Consumption</h2>
+      <div class="triangle-ribbon"></div>
+      <br class="cl" />
 
       <div id="chart_div"></div>
+            
+    <br class="cl" />  
+    
+    <h2 class="ribbon ">Vehicle costs</h2>
+      <div class="triangle-ribbon"></div>
+      <br class="cl" />
       
-      <h2>Vehicle costs</h2>
       <div id="vehicle_costs"></div>
       
       <a class='button'  href='/fueling?vehicle=#{params[:vehicle]}'>Show fuelings</a>

@@ -112,19 +112,26 @@ class  FuelingController < PublicController
   
   def list_erb
   
-      html = "<h2>  #{h(@vehicle.maker.name)} #{h(@vehicle.model_exact)} fueling entries</h2>
-      <a class='button'  href='/stats?vehicle=#{params[:vehicle]}'>Show stats</a>
-      <div>
-      	Make: #{h(@vehicle.maker.name)} <br>
-      	Model: #{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}<br>
-      	Avg consumption #{h(@consumption)}
-      </div>"
+      html = <<-HTML
+      <h2 class="ribbon full">Fuelings and Costs of #{@vehicle.maker.name} #{@vehicle.model_exact} <span>Owner is <a href="" style="color:white">username</a></span></h2>
+          <div class="triangle-ribbon"></div>
+          <br class="cl" />
+      HTML
+/*
+<div>
+	Make: #{h(@vehicle.maker.name)} <br>
+	Model: #{h(@vehicle.model.name + ' ' + @vehicle.model_exact)}<br>
+	Avg consumption #{h(@consumption)}
+</div>
+*/
 
       if !@empty
         html += "
         <style>
+        /*
           tr.fueling td { color:blue; }
           tr.cost td { color:red;  }
+        */
         </style>
         <table style='width:100%;'>
         <tr>
@@ -155,8 +162,8 @@ class  FuelingController < PublicController
             	<td>#{h(Double.toString(f.quantity))} l</td>
             	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
             	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
-            	<td> <a class='button'  href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-            	<td> <a class='button'  href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
+            	<td> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
+            	<td> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
             </tr>"
           elsif f.type == Fueling.TYPE_COST
               html += "
@@ -166,8 +173,8 @@ class  FuelingController < PublicController
               	<td>#{f.cost_type_title}</td>
               	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
               	<td></td>
-              	<td> <a class='button'  href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-              	<td> <a class='button'  href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
+              	<td> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
+              	<td> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
               </tr>"
           end
           
@@ -179,8 +186,13 @@ class  FuelingController < PublicController
         html += "<div> No fueling entries </div>"
         null
       end
-      html += "<a class='button'  href='/fueling/new?vehicle=#{params[:vehicle]}'>Add fueling entry</a> "
-      html += "<a class='button'  href='/costs_notes/new?vehicle=#{params[:vehicle]}'>Add costs/note entry</a> "
+      html += <<-HTML
+      <br />
+      <button class="black small" onclick="document.location.href = '/fueling/new?vehicle=#{params[:vehicle]}'">add fueling</button>
+      <button class="black small" onclick="document.location.href = '/costs_notes/new?vehicle=#{params[:vehicle]}'">add cost/note</button>
+      HTML
+      
+      html +="<br><br><a  href='/stats?vehicle=#{params[:vehicle]}'>Show stats</a>"
       html
       
   end
@@ -222,8 +234,11 @@ class  FuelingController < PublicController
     trailer_checked = @fueling.trailer == 1 ? 'checked="checked"' : ''
                                                         
      <<-HTML
-    <h1>#{@new ? 'Add fueling entry' : 'Edit fueling entry'}</h1>
 
+    <h2 class="ribbon full">#{@new ? 'Add fueling entry' : 'Edit fueling entry'}</h2>
+        <div class="triangle-ribbon"></div>
+        <br class="cl" />
+        
     <form method="post" action="/fueling/save/#{String.valueOf(@fueling.url_id)}?vehicle=#{params[:vehicle]}">
       <h3> Basic data </h3>
       <dl>
@@ -306,7 +321,7 @@ class  FuelingController < PublicController
      	
      	<dl>
     		<dt>
-    			<input type="submit" name="submit" value=" #{@new ? 'Create' : 'Update'}">
+    			<button type="submit">#{@new ? 'Create' : 'Update'}</button>
     		</dt>
     	</dl>
     </form>

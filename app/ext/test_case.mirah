@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 
-
+/*
 class TestCase   
   
   class Fail < Exception; 
@@ -333,7 +333,7 @@ class TestCase
   
 end
 
-
+*/
 
 
 

@@ -71,8 +71,10 @@ class  NoteController < PublicController
                              value(@fueling.cost_type).to_s
                                       
      <<-HTML
-    <h1>#{@new ? 'Add note/cost entry' : 'Edit note/cost entry'}</h1>
-
+    <h2 class="ribbon full">#{@new ? 'Add note/cost entry' : 'Edit note/cost entry'}</h2>
+        <div class="triangle-ribbon"></div>
+        <br class="cl" />
+        
     <form method="post" action="/costs_notes/save/#{String.valueOf(@fueling.url_id)}?vehicle=#{params[:vehicle]}">
       <dl>
         <dt><label for="date">Date:</label></dt>
@@ -106,7 +108,7 @@ class  NoteController < PublicController
      	
      	<dl>
     		<dt>
-    			<input type="submit" name="submit" value=" #{@new ? 'Create' : 'Update'}">
+    			<button type="submit">#{@new ? 'Create' : 'Update'}</button>
     		</dt>
     	</dl>
     </form>

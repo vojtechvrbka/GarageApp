@@ -92,9 +92,14 @@ class  VehicleController < PublicController
         model_select += "</select>";
       
     
-    html = "<h2>Vehicles</h2>"
+    html = <<-HTML
+      <h2 class="ribbon full">Vehicles</h2>
+        <div class="triangle-ribbon"></div>
+        <br class="cl" />
+    HTML
     
-    html += "<h3>Filter</h3>
+    html += <<-HTML 
+            <h3>Filter</h3>
             <form action='' method='get'>
             <input type='hidden' name='search' value='1'>
             <dl>
@@ -109,37 +114,132 @@ class  VehicleController < PublicController
               <dt>Model</dt>
               <dd id='model'>#{model_select}</dd>
             </dl>
-            <input type='submit' name='submit' value='Filter'>
-            </form>"
-    
-    
+            <button type="submit">Filter</button>
+
+            </form>
+            HTML
     
     if !@empty
-    html += "
-    <table>
-      <tr>
-    		<th>Make</th>
-    		<th>Model</th>
-    		<th>Exact</th>
-    		<th>&nbsp;</th>
-    		<th>&nbsp;</th>
-      </tr>"
-      
+ 
     @vehicles.each do |vehicle|
-      html += "
-    <tr>
-    	<td>#{h(vehicle.maker.name)}</td>
-    	<td>#{h(vehicle.model.name)}</td>
-    	<td>#{h(vehicle.model_exact)}</td>
-    	<td> <a class='button' href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a> </td>
-    	<td> <a class='button' href='/stats/?vehicle=#{vehicle.id}'>stats</a> </td>
-    </tr>"
+      html += <<-HTML
+      <div class="grid_4"> <img class="inlinepic" src="/img/tmp/bmw_small.jpg" alt="" /> </div>
+            <div class="grid_8">
+              <h4>#{h(vehicle.maker.name)} #{h(vehicle.model_exact)}</h4>
+              <h5 class="inline">Distance: <span style="font-weight:normal;">60 541 Km</span></h5> <br class="cl" />
+              <h5 class="inline">Mileage: <span style="font-weight:normal;">8.2 l/100Km</span></h5> <br class="cl" />
+              <br />
+              <button class="blue small" onclick="document.location.href = '/vehicle/show/#{vehicle.id}'">Detail</button>
+              <button class="black small" onclick="document.location.href = '/fueling/?vehicle=#{vehicle.id}'">fueling entries</button>
+              <button class="black small" onclick="document.location.href = '/stats/?vehicle=#{vehicle.id}'">stats</button>
+              <button class="black small"  onclick="document.location.href = '/garage/edit/#{vehicle.id}'">Edit</button>
+
+            </div>
+            <br class="cl" />
+            <br />  
+      HTML
       end
-      html += '</table>'
+      html 
     else
       html += "No vehicles"
     end
   end
 
+  
+  def show
+    if @vehicle = Vehicle.get(params.id)
+      @exists = true
+    else
+      @exists = false
+    end
+    
+    show_erb
+  end
+  
+  
+  def show_erb
+    <<-HTML
+    <h2 class="ribbon full">#{@vehicle.maker.name} #{@vehicle.model_exact} <span>Owner is <a href="" style="color:white">username</a></span></h2>
+        <div class="triangle-ribbon"></div>
+        <br class="cl" />
+        <div class="grid_4">
+          <img class="inlinepic" src="/img/tmp/bmw_detail.jpg">
+        </div>
+        <div class="grid_8 vehicle_info">
+          <strong>Make</strong> <span>#{@vehicle.maker.name}</span><br />
+          <strong>Model</strong> <span>#{@vehicle.model_exact}</span><br />
+          <strong>Fuel type</strong> <span>#{@vehicle.fuel_type_title}</span><br />
+          <br />
+          <strong>Gearing type</strong> <span>#{@vehicle.gearing_title}</span><br />
+          <strong>Engine power</strong> <span>#{@vehicle.engine_power} kW</span><br />
+          <br />
+          <strong>Mileage</strong> <span>5.22 l/100km</span><br />
+          <strong>Distance</strong> <span>25 3652 Km</span><br />
+        </div>
+    
+    <br class="cl" /><br />
+    
+    <h2 class="ribbon">Gallery</h2>
+        <div class="triangle-ribbon"></div>
+         <br class="cl" />
+
+         <!-- "previous page" action -->
+         <a class="prev browse left"></a>
+         <div id="browsable" class="scrollable">   
+
+            <!-- root element for the items -->
+            <div class="items">
+
+               <!-- 1-5 -->
+               <div>
+                  <img src="/img/screenshots/buttons.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/gallery.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/calendars.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/charts.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/coding.jpg" height="100" width="100" alt="" />
+               </div>
+
+               <!-- 5-10 -->
+               <div>
+                  <img src="/img/screenshots/docs.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/forms.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/gallery.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/notifications.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/pagination.jpg" height="100" width="100" alt="" />
+               </div>
+
+               <!-- 10-15 -->
+               <div>
+                  <img src="/img/screenshots/psd.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/switches.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/tabs.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/themes.jpg" height="100" width="100" alt="" />
+                     <img src="/img/screenshots/tips.jpg" height="100" width="100" alt="" />
+               </div>
+
+            </div>
+
+         </div>
+         <!-- "next page" action -->
+         <a class="next browse right"></a>
+
+
+         <br class="cl" /><br />
+
+    <h2 class="ribbon">Fuelings and Costs</h2>
+             <div class="triangle-ribbon"></div>
+              <br class="cl" />
+
+     <button class="black small" onclick="document.location.href = '/fueling/?vehicle=#{@vehicle.id}'">show more</button>
+     <br class="cl" /><br />
+     
+    <h2 class="ribbon">Statistics</h2>
+             <div class="triangle-ribbon"></div>
+              <br class="cl" />
+              
+    <button class="black small" onclick="document.location.href = '/stats/?vehicle=#{@vehicle.id}'">show more</button>
+    HTML
+  end
+  
   
 end

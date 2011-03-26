@@ -1,4 +1,4 @@
-window.init_data = function(data) {
+ window.init_data = function(data) {
 
 //(function() {
   
@@ -34,4 +34,4 @@ window.init_data = function(data) {
     });
   };
 
-};
+ };

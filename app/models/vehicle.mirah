@@ -2,7 +2,7 @@ import com.google.appengine.ext.mirah.db.*
 import com.google.appengine.api.datastore.*;
 import dubious.*
 import ext.*
-
+import java.util.*
 
 class Vehicle < Model
   property :user_id,    Integer
@@ -33,6 +33,14 @@ class Vehicle < Model
   def id
     key.getId
   end
+  
+  def url_id    
+    if key != null
+      String.valueOf(key.getId)
+    else
+      'new'
+    end
+  end  
   
   def self.TYPE_AUTOMOBILE ; 1 ;end
   def self.TYPE_TWO_WHEELER ; 2 ;end
@@ -65,12 +73,25 @@ class Vehicle < Model
     end
   end    
   
-  def url_id    
-    if key != null
-      String.valueOf(key.getId)
-    else
-      'new'
-    end
+
+  
+  def fuel_type_title
+    h = HashMap.new
+    h.put(Long.new(Vehicle.FUEL_DIESEL),'Diesel')
+    h.put(Long.new(Vehicle.FUEL_GASOLINE),'Gasoline')
+    h.put(Long.new(Vehicle.FUEL_LPG),'LPG')
+    h.put(Long.new(Vehicle.FUEL_CNG),'CNG')
+    h.put(Long.new(Vehicle.FUEL_ELECTRICITY),'Electricity')
+
+    String(h.get(Long.new(fuel_type)))
+  end
+  
+  def gearing_title
+    h = HashMap.new
+    h.put(Long.new(Vehicle.GEARING_MANUAL),'Manual')
+    h.put(Long.new(Vehicle.GEARING_AUTOMATIC),'Automatic')
+
+    String(h.get(Long.new(gearing)))
   end
   
   def title:String
@@ -90,8 +111,8 @@ class Vehicle < Model
     v.model_id = 0
     v.model_exact = ''
     v.fuel_type = 0
-    v.fuel_unit = ''
-    v.year = ''
+  #  v.fuel_unit = ''
+    v.year = 0
     v.engine_power = 0.0
  #   v.odometer = 0
     v.tank_capacity = 0

@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-
+/*
 class TestSuiteController < MyController
 
   def cases:List
@@ -105,3 +105,4 @@ h3 {
   end  
   
 end
+*/

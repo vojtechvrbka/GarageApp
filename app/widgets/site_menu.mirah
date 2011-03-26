@@ -16,7 +16,15 @@ class SiteMenu
   def initialize(e:RequestEvent)
     @e = e
     @root = MenuItem.new(self)
+    @id = ''
   end
+  
+  def initialize(e:RequestEvent,id:String)
+    @e = e
+    @root = MenuItem.new(self)
+    @id = id
+  end
+  
   
   def e
     @e
@@ -30,8 +38,13 @@ class SiteMenu
     @root.subitem(name, link)
   end
   
+  
   def to_s
-    @root.children_html
+    if @id == ''
+      @root.children_html
+    else
+      @root.children_html(@id)
+    end
   end
   
   def toString
@@ -108,13 +121,24 @@ end
       '<ul>'+html+'</ul>'
     end
     
+    def children_html(id:String)
+      html = ''
+      if children
+        children.each { |_ch|
+          child = MenuItem(_ch)
+          html += child.html
+        }
+      end
+      '<ul id="'+id+'">'+html+'</ul>'
+    end
+    
     def html
       li = Element.new(:li)
       li.append_child(anchor)
       
       if active?
         #puts "TREFA"
-        li.class(:active)
+        li.class(:current)
       end
       
       if @children

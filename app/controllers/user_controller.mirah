@@ -33,8 +33,7 @@ class UserController < SiteController
         @error = ex.getMessage
       end
     end
-    @page_content = login_erb
-    main_erb
+    layout login_erb
   end
 
   def logout
@@ -48,7 +47,7 @@ class UserController < SiteController
     redirect_to :index
   end
   
-  def register
+  def signup
     @error = ""
     if params.has(:email)   
         email = params['email']
@@ -72,28 +71,31 @@ class UserController < SiteController
           end
         end 
     end  
-    @page_content = register_erb;
-    main_erb
+    layout register_erb
   end  
   
   def login_erb
     <<-HTML 
-    <form id="login-form" action="/user/login" method="post">
-     <h2>Login</h2>
-     #{@error}
-      <dl>
-        <dt><label for="login_email">Email:</label></dt>
-        <dd><input id="login_email" name="email" type="text" class="input_text" value="#{h(params[:email])}"/></dd>
-      </dl>
-      <dl>
-        <dt><label for="login_pass">Password:</label></dt>
-        <dt><input id="login_pass" name="password" type="password" class="input_password" value=""/></dt>
-      </dl>
-      <dl>
-        <dt>&nbsp;</dt>
-        <dd><input type="submit" name="submit" value="Login"></dd>
-      </dl>
-    </form>
+    
+
+     <h2 class="ribbon blue full">Login</h2>
+     <div class="triangle-ribbon blue"></div>
+     <br class="cl" />
+     
+     #{error(@error)}
+     <form id="login-form" action="/user/login" method="post" class="user">
+        <p>
+          <label for="login_email">Email:</label>
+          <input id="login_email" class="middle" name="email" type="text" class="input_text" value="#{h(params[:email])}"/>
+        </p>
+        <p>
+          <label for="login_pass">Password:</label>
+          <input id="login_pass" class="middle" name="password" type="password" class="input_password" value=""/>
+        </p>
+        <p>    
+          <button class="fr" type="submit">Login</button>
+        </p>
+      </form>
     <br style="clear:both;" />
     <a href="/user/register">Don't have a GarageApp account? Click here to sign up!</a> 
     HTML
@@ -101,31 +103,42 @@ class UserController < SiteController
   
   def register_erb
    <<-HTML
-   <form action="" method="post">
-     <h2>Signup</h2>
-     #{@error}
-     <dl>
-       <dt><label for="email">Email</label></dt>
-       <dd><input type="text" name="email" id="email" value="#{h(params[:email])}"></dd>
-     </dl>
-     <dl>
-        <dt><label for="password">Password</label></dt>
-        <dd><input type="text" name="password" id="password" value=""></dd>
-      </dl>
-      <dl>
-         <dt><label for="password_confirm">Confirm</label></dt>
-         <dd><input type="text" name="password_confirm" id="password_confirm" value=""></dd>
-      </dl>
-      <dl>
-        <dt>&nbsp;</dt>
-        <dd><input type="submit" name="submit" value="Sign Up"></dd>
-      </dl>
-   </form>
+   
+     <h2 class="ribbon blue full">SignUp</h2>
+     <div class="triangle-ribbon blue"></div>
+     <br class="cl" />
+
+     #{error(@error)}
+     <form action="" method="post" class="user">
+       <p>
+         <label for="email">Email</label>
+         <input type="text" class="middle" name="email" id="email" value="#{h(params[:email])}">
+       </p>
+       <p>
+          <label for="password">Password</label>
+          <input type="password" class="middle" name="password" id="password" value="">
+        </p>
+        <p>
+           <label for="password_confirm">Confirm</label>
+           <input type="password" class="middle" name="password_confirm" id="password_confirm" value="">
+        </p>
+        <p>
+          <button class="fr" type="submit">Sign Up</button>
+        </p>
+      </form>
    HTML
     
   end
   
-
+  def error(message:String)
+    if !message.equals('')
+    <<-HTML
+    <div class="notification error"> <span class="strong">Error!</span> #{message} </div>
+    HTML
+    else
+      ''
+    end
+  end
   
   /*
   def login
@@ -151,9 +164,7 @@ class UserController < SiteController
     main_erb
   end
   */
-  
-  # def_edb(login_erb, 'views/site/login.html.erb')
-  def_edb(main_erb, 'views/layouts/site.html.erb')  
+
 end
 
 
