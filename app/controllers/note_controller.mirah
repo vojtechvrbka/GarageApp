@@ -46,7 +46,8 @@ class  NoteController < PublicController
     price_currency_select  = Element.select('note[price_currency]').
                              option("USD", "USD").
                              option("EUR", "EUR").
-                             value(@fueling.price_currency).to_s
+                             value(@fueling.price_currency)
+    price_currency_select.class(:small2)                         
      type_select =  Element.select('note[cost_type]').
                              option(Fueling.COST_MAINTENANCE, "Maintenance").
                              option(Fueling.COST_REPAIR, "Repair").
@@ -68,7 +69,8 @@ class  NoteController < PublicController
                              option(Fueling.COST_PARKING_TAX, "Parking tax").
                              option(Fueling.COST_TOLL, "Toll").
                              option(Fueling.COST_SPARE_PARTS, "Spare parts").
-                             value(@fueling.cost_type).to_s
+                             value(@fueling.cost_type)
+      type_select.class(:middle)
                                       
      <<-HTML
     <h2 class="ribbon full">#{@new ? 'Add note/cost entry' : 'Edit note/cost entry'}</h2>
@@ -79,23 +81,23 @@ class  NoteController < PublicController
       <dl>
         <dt><label for="date">Date:</label></dt>
     		<dd>
-    		  <input type="text" class="date-field" id="date_to_human">
+    		  <input type="text" class="small2 date-field" id="date_to_human">
     		  <input type="hidden" id="date_to_ts"  name="note[date]" value="#{h(Long.toString(@fueling.date))}">	
     		</dd>
       </dl>
       <dl>
         <dt><label for="odometer">Odometer:</label></dt>
-    		<dd><input type="text" id="odometer" name="note[odometer]" value="#{h(Long.toString(@fueling.odometer))}"></dd>
+    		<dd><input type="text" class="small2" id="odometer" name="note[odometer]" value="#{h(Long.toString(@fueling.odometer))}"></dd>
       </dl>  
       <dl>
         <dt><label for="type">Type:</label></dt>
-    		<dd>#{type_select}</dd>
+    		<dd>#{type_select.to_s}</dd>
       </dl>
 
       <dl>
         <dt><label for="price">Price:</label></dt>
-    		<dd><input type="text" id="price" name="note[price]" value="#{h(Double.toString(@fueling.price))}">  
-    		  #{price_currency_select}
+    		<dd><input type="text" class="small" id="price" name="note[price]" value="#{h(Double.toString(@fueling.price))}">  
+    		  #{price_currency_select.to_s}
     		  </dd>
       </dl>
       

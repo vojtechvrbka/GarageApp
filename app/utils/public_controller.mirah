@@ -31,12 +31,12 @@ class PublicController < MyController
            item('Homepage', '/').
            item('My garage', '/garage').
            item('My Stats', '/stats').
-           item('Listing vehicles', '/vehicle').to_s
+           item('Vehicles', '/vehicle').to_s
          
     else
       SiteMenu.new(params,'nav').
            item('Homepage', '/').
-           item('Listing vehicles', '/vehicle').to_s
+           item('Vehicles', '/vehicle').to_s
     end     
   end
 

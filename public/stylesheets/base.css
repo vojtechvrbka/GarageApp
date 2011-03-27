@@ -24,7 +24,7 @@ h1#logo {
 	height:51px;
 	margin-bottom:-13px;
 	text-indent:-4000px;
-	width:231px;
+	width:337px;
 }
 h1#logo a {
 	display:block;
@@ -359,7 +359,7 @@ footer li a:hover {
 #page-content.two-col {
 	float:left;
 	padding-right:35px;
-	width:600px;
+	width:550px;
 	display:inline;
 }
 .breadcrumbs {
@@ -380,7 +380,7 @@ footer li a:hover {
 }
 aside {
 	float:left;
-	width:260px;
+	width:310px;
 	color:#333333;
 	display:inline;
 }
@@ -888,13 +888,20 @@ form {
 body.ie7 form, body.ie8 {
 	margin-bottom:40px;
 }
-form p {
+form p,
+form dl {
 	margin-bottom:15px;
 }
 form label {
 	float:left;
 	width:140px;
 	margin-top:5px;
+}
+form dd label,
+form dd input {
+  float:none;
+  width:auto;
+  margin:0;
 }
 form input, form textarea {
 	padding:10px 5px;

@@ -95,29 +95,12 @@ class  VehicleController < PublicController
     html = <<-HTML
       <h2 class="ribbon full">Vehicles</h2>
         <div class="triangle-ribbon"></div>
-        <br class="cl" />
+        <br class="cl" />       
+        <div id="page-content" class="two-col container_12">
+         
     HTML
     
-    html += <<-HTML 
-            <h3>Filter</h3>
-            <form action='' method='get'>
-            <input type='hidden' name='search' value='1'>
-            <dl>
-              <dt>Vehicle type</dt>
-              <dd>#{type_select}</dd>
-            </dl>
-            <dl>
-              <dt>Make</dt>
-              <dd>#{maker_select}</dd>
-            </dl>
-            <dl>
-              <dt>Model</dt>
-              <dd id='model'>#{model_select}</dd>
-            </dl>
-            <button type="submit">Filter</button>
 
-            </form>
-            HTML
     
     if !@empty
  
@@ -143,6 +126,50 @@ class  VehicleController < PublicController
     else
       html += "No vehicles"
     end
+    
+    if !logged_in?
+      html += <<-HTML
+      <div class="notification tip nopic tc"> <strong>You are not logged in</strong>
+        <p><a href="#">Sign in</a> and add your own vehicle. It's fun :-)</p>
+      </div>
+      HTML
+    end
+    
+    html += <<-HTML
+      <br class="cl" />
+      <div class="pagination fr"> <a href="#">&lt; Prev</a> <a href="#" class="number">1</a> <a href="#" class="number current">2</a> <span class="dots">...</span> <a href="#" class="number">8</a> <a href="#" class="number">9</a> <a href="#">Next &gt;</a> </div>
+      <br class="cl" />
+    HTML
+    
+    html += <<-HTML 
+          </div>
+          <aside>
+          
+            <h3>Filter</h3>
+            <form action='' method='get'>
+            <input type='hidden' name='search' value='1'>
+            <dl>
+              <dt>Vehicle type</dt>
+              <dd>#{type_select}</dd>
+            </dl>
+            <dl>
+              <dt>Make</dt>
+              <dd>#{maker_select}</dd>
+            </dl>
+            <dl>
+              <dt>Model</dt>
+              <dd id='model'>#{model_select}</dd>
+            </dl>
+            <button type="submit">Filter</button>
+
+            </form>
+          </aside>
+
+          HTML
+    
+    
+    
+
   end
 
   

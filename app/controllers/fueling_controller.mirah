@@ -204,19 +204,21 @@ class  FuelingController < PublicController
                    option( Fueling.FUELING_TYPE_PARTLY_FULL, "Partly full").
                    option( Fueling.FUELING_TYPE_FIRST, "First fueling").
                    option( Fueling.FUELING_TYPE_INVALID, "Invalid").
-                   value(@fueling.fueling_type).to_s
+                   value(@fueling.fueling_type)
                                       
     fuel_unit_select = Element.select('fueling[quantity_unit]').
                              option("l", "l").
                              option("g_us", "Gallon (US)").
                              option("g_imp", "Gallon (Imperial)").
-                             value(@fueling.quantity_unit).to_s
+                             value(@fueling.quantity_unit)
+    fuel_unit_select.class(:small2)
                              
     price_currency_select  = Element.select('fueling[price_currency]').
                              option("USD", "USD").
                              option("EUR", "EUR").
                              option("KC", "Kč").
-                             value(@fueling.price_currency).to_s
+                             value(@fueling.price_currency)
+    price_currency_select.class(:small2)
               
     tires_summer_checked = @fueling.tires == Fueling.TIRES_SUMMER ? 'checked="checked"' : '' 
     tires_winter_checked = @fueling.tires == Fueling.TIRES_WINTER ? 'checked="checked"' : ''  
@@ -242,36 +244,36 @@ class  FuelingController < PublicController
     <form method="post" action="/fueling/save/#{String.valueOf(@fueling.url_id)}?vehicle=#{params[:vehicle]}">
       <h3> Basic data </h3>
       <dl>
-        <dt><label for="date">Date:</label></dt>
+        <dt><label for="date">Date</label></dt>
     		<dd>
-    		  <input type="text" class="date-field" id="date_to_human">
+    		  <input class="small2 date-field" type="text" id="date_to_human">
     		  <input type="hidden" id="date_to_ts"  name="fueling[date]" value="#{h(Long.toString(@fueling.date))}">	
     		</dd>
       </dl>
       <dl>
-        <dt><label for="type">Type:</label></dt>
-    		<dd>#{type_select}</dd>
+        <dt><label for="type">Type</label></dt>
+    		<dd>#{type_select.to_s}</dd>
       </dl>
       <dl>
-        <dt><label for="odometer">Odometer:</label></dt>
-    		<dd><input type="text" id="odometer" name="fueling[odometer]" value="#{h(Long.toString(@fueling.odometer))}"></dd>
+        <dt><label for="odometer">Odometer</label></dt>
+    		<dd><input class="small2" type="text" id="odometer" name="fueling[odometer]" value="#{h(Long.toString(@fueling.odometer))}"></dd>
       </dl>
       <dl>
-        <dt><label for="quantity">Quantity:</label></dt>
-    		<dd><input type="text" id="quantity" name="fueling[quantity]" value="#{h(Double.toString(@fueling.quantity))}">
-    		  #{fuel_unit_select}
+        <dt><label for="quantity">Quantity</label></dt>
+    		<dd><input class="small" type="text" id="quantity" name="fueling[quantity]" value="#{h(Double.toString(@fueling.quantity))}">
+    		  #{fuel_unit_select.to_s}
     		  </dd>
       </dl>
 
       <dl>
-        <dt><label for="price">Price:</label></dt>
-    		<dd><input type="text" id="price" name="fueling[price]" value="#{h(Double.toString(@fueling.price))}">  
-    		  #{price_currency_select}
+        <dt><label for="price">Price</label></dt>
+    		<dd><input class="small2" type="text" id="price" name="fueling[price]" value="#{h(Double.toString(@fueling.price))}">  
+    		  #{price_currency_select.to_s}
     		  </dd>
       </dl>
       
       <dl>
-        <dt><label for="note">Note:</label></dt>
+        <dt><label for="note">Note</label></dt>
     		<dd><textarea id="note" name="fueling[note]" style="width:200px;height:40px;">#{h(@fueling.note)}</textarea></dd>
       </dl>
      	

@@ -53,7 +53,30 @@ class SiteController < PublicController
      <img class="feature-img" src="img/screenshot.png" alt="">
      <div class="feature-text">
      <h2 id="tagline">Your virtual garage</h2>
-     <h3 id="tagline-mini">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h3>
+     <!-- 
+     <h3 id="tagline-mini">
+       We calculates your car's gas mileage and helps to manage the vehicle's costs.
+     </h3>
+     -->
+     
+     <ul class="bullet-list">
+       <li>provides a profile of your car</li>
+       <li>helps you to calculate and track your fuel economy and vehicle-related costs</li>
+       <li>reminds you of important events such as car services</li>
+     </ul>
+     
+     
+     
+     
+     
+     
+     
+    <!-- 
+    <ul class="bullet-list">
+      <li>Lorum</li>
+      <li>Ipsum</li>
+      <li>Dorum</li>
+    </ul>
      <ul class="feature-screenshots">
        <li><img class="inlinepic" src="img/screenshots/buttons.jpg" height="50" width="50" alt="" /></li>
        <li><img class="inlinepic" src="img/screenshots/gallery.jpg" height="50" width="50" alt="" /></li>
@@ -65,82 +88,41 @@ class SiteController < PublicController
       <li> <img class="inlinepic" src="img/screenshots/gallery.jpg" height="50" width="50" alt="" /></li>
      </ul>
      <br class="cl" />
+     -->
+     
      <form action="/user/signup" method="post">
-       <button class="blue" type="submit">Sign Up</button> 
+       <button class="blue" type="submit">Sign Up</button> It's fast and free
      </form>
-     <button class="black">Tour</button>
+     <!-- <button class="black">Tour</button> -->
      </div>
      <br class="cl" />
      </div>
 
+     <br class="cl" />
+     
     <div id="page-content" class="container_12">
-           <h2 class="ribbon">How it works</h2>
+           <h2 class="ribbon">How it works ?</h2>
            <div class="triangle-ribbon"></div>
      <br class="cl" />
 
      <ul class="services-list">
        <li> <span class="process">1</span>
-         <p><strong>Lorem ipsum dolor</strong> - sit amet consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+         <h3>Sign up</h3> 
+         <p> Sign up for free and add your vehicle.  </p>
        </li>
        <li> <span class="process">2</span>
-         <p><strong>Lorem ipsum dolor</strong> - sit amet consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+         <h3>Add fuelings and other costs</h3> 
+         <p> Keep records of all fueling and other costs  </p>
        </li>
        <li> <span class="process">3</span>
-         <p><strong>Lorem ipsum dolor</strong> - sit amet consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+         <h3>Check your stats</h3> 
+         <p> Now you can look at your own stats and compare it with users which owns the same vehicle  </p>
        </li>
      </ul>
 
 
     <br class="cl" />
         
-    <br />
-    <h2 class="ribbon blue">Screenshots</h2>
-    <div class="triangle-ribbon blue"></div>
-    <br class="cl" />
-
-
-   <!-- "previous page" action -->
-   <a class="prev browse left"></a>
-   <div id="browsable" class="scrollable">   
-
-      <!-- root element for the items -->
-      <div class="items">
-
-         <!-- 1-5 -->
-         <div>
-            <img src="img/screenshots/buttons.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/gallery.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/calendars.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/charts.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/coding.jpg" height="100" width="100" alt="" />
-         </div>
-
-         <!-- 5-10 -->
-         <div>
-            <img src="img/screenshots/docs.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/forms.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/gallery.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/notifications.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/pagination.jpg" height="100" width="100" alt="" />
-         </div>
-
-         <!-- 10-15 -->
-         <div>
-            <img src="img/screenshots/psd.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/switches.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/tabs.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/themes.jpg" height="100" width="100" alt="" />
-               <img src="img/screenshots/tips.jpg" height="100" width="100" alt="" />
-         </div>
-
-      </div>
-
-   </div>
-   <!-- "next page" action -->
-   <a class="next browse right"></a>
-   <br />
-
-
 
 
      </div>
@@ -173,6 +155,23 @@ class SiteController < PublicController
   end
 # 	#{menu_top} 	#{userline}
   def layout(content:String)  
+    
+    
+    if logged_in?
+      login_link = <<-HTML
+    <div class="fr" style="position:relative;"><div class="fr" style="width:230px;position:absolute;right:0;">
+      <form action="/user/logout" method="post"><button style="float:right;display:inline;" class="small blue" type="submit">Logout</button></form>
+    </div></div>
+      HTML
+    else
+      login_link = <<-HTML
+    <div class="fr" style="position:relative;"><div class="fr" style="width:230px;position:absolute;right:0;">
+      <span style="float:left;display:inline;padding:8px 8px 0 0;">Allready GarageApp User ? </span>
+      <form action="/user/login" method="post"><button style="float:left;display:inline;" class="small blue" type="submit">Login</button></form>
+    </div></div>
+      HTML
+    end
+    
     <<-HTML
       <!doctype html>
       <html lang="en" class="no-js">
@@ -247,7 +246,10 @@ class SiteController < PublicController
             	#{menu_top}
               <br class="cl" />
           </nav>
+          #{login_link}
+          
         <br class="cl" />  
+
         </header>
         <!-- end header --> 
 

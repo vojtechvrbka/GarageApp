@@ -217,7 +217,7 @@ class  GarageController < PublicController
     <h2 class="ribbon full">My garage </h2>
     <div class="triangle-ribbon"></div>
     <br class="cl" />
-   <div id="page-content" class="two-col container_12">
+    <div id="page-content" class="two-col container_12">
     
     HTML
     if @logged_in
@@ -256,11 +256,26 @@ class  GarageController < PublicController
       <form action="/garage/new" method="post">
         <button class="large">Add vehicle</button>
       </form>
+      <br class="cl" />
+      </div>
     HTML
+    
+    html += <<-HTML
+
+      <aside>
+    
+      <h3>User xxx</h3>
+    
+    </aside>
+    
+    
+    HTML
+    
+    
     else
       html += "Please, Login first"
     end
-    html += "</div>"
+
   end
 
   
