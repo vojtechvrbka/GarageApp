@@ -130,6 +130,10 @@ class UserController < SiteController
     
   end
   
+  def error()
+    ""
+  end
+  
   def error(message:String)
     if !message.equals('')
     <<-HTML

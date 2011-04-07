@@ -1,5 +1,5 @@
 application: garageapp
-version: beta-1
+version: beta-2
 runtime: java
 public_root: /public
 sessions_enabled: true
@@ -16,10 +16,6 @@ handlers:
     servlet: controllers.MobileController
     name: mobile
               
-  - url: /admin/*
-    servlet: controllers.AdminController
-    name: admin    
-    
   - url: /user/*
     servlet: controllers.UserController
     name: user    

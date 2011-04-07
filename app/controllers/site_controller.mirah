@@ -42,6 +42,9 @@ class SiteController < PublicController
   end
     
   def index
+    if logged_in?
+      redirect :garage
+    end
     layout homepage_erb
   end  
 
@@ -60,17 +63,11 @@ class SiteController < PublicController
      -->
      
      <ul class="bullet-list">
-       <li>provides a profile of your car</li>
+       <li>provides a online profile of your car</li>
        <li>helps you to calculate and track your fuel economy and vehicle-related costs</li>
        <li>reminds you of important events such as car services</li>
      </ul>
-     
-     
-     
-     
-     
-     
-     
+
     <!-- 
     <ul class="bullet-list">
       <li>Lorum</li>
@@ -90,9 +87,8 @@ class SiteController < PublicController
      <br class="cl" />
      -->
      
-     <form action="/user/signup" method="post">
-       <button class="blue" type="submit">Sign Up</button> It's fast and free
-     </form>
+    <a href="/user/signup" class="button blue">Sign Up</a> It's fast and free
+
      <!-- <button class="black">Tour</button> -->
      </div>
      <br class="cl" />
@@ -101,7 +97,7 @@ class SiteController < PublicController
      <br class="cl" />
      
     <div id="page-content" class="container_12">
-           <h2 class="ribbon">How it works ?</h2>
+           <h2 class="ribbon">How does it work ?</h2>
            <div class="triangle-ribbon"></div>
      <br class="cl" />
 
@@ -153,6 +149,7 @@ class SiteController < PublicController
     end
     models += '</select>'
   end
+  
 # 	#{menu_top} 	#{userline}
   def layout(content:String)  
     
@@ -160,14 +157,14 @@ class SiteController < PublicController
     if logged_in?
       login_link = <<-HTML
     <div class="fr" style="position:relative;"><div class="fr" style="width:230px;position:absolute;right:0;">
-      <form action="/user/logout" method="post"><button style="float:right;display:inline;" class="small blue" type="submit">Logout</button></form>
+      <a href="/user/logout" style="float:right;display:inline;" class="button small blue">Logout</a>
     </div></div>
       HTML
     else
       login_link = <<-HTML
     <div class="fr" style="position:relative;"><div class="fr" style="width:230px;position:absolute;right:0;">
       <span style="float:left;display:inline;padding:8px 8px 0 0;">Allready GarageApp User ? </span>
-      <form action="/user/login" method="post"><button style="float:left;display:inline;" class="small blue" type="submit">Login</button></form>
+      <a href="/user/login" style="float:left;display:inline;" class="button small blue">Login</a>
     </div></div>
       HTML
     end
@@ -279,6 +276,11 @@ class SiteController < PublicController
 
     HTML
   end
+  
+
+    
+  
+  
   #    <script>init_data({#{json}})</script>
 end
 

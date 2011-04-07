@@ -113,7 +113,7 @@ class  FuelingController < PublicController
   def list_erb
   
       html = <<-HTML
-      <h2 class="ribbon full">Fuelings and Costs of #{@vehicle.maker.name} #{@vehicle.model_exact} <span>Owner is <a href="" style="color:white">username</a></span></h2>
+      <h2 class="ribbon full">Fuelings and Costs of <a href="/vehicle/show/#{@vehicle.id}" >#{@vehicle.maker.name} #{@vehicle.model_exact}</a> <span>Owner is <a href="" style="color:white">username</a></span></h2>
           <div class="triangle-ribbon"></div>
           <br class="cl" />
       HTML
@@ -125,27 +125,24 @@ class  FuelingController < PublicController
 </div>
 */
 
-      if !@empty
-        html += "
-        <style>
-        /*
-          tr.fueling td { color:blue; }
-          tr.cost td { color:red;  }
-        */
-        </style>
-        <table style='width:100%;'>
-        <tr>
-          <th>Date</th>
-      	
-      		<th>Odometer</th>
-      		<th>Quantity</th>
-      		<th>Price</th>
-      		<th>Fuel consumption</th>
-        </tr>"
-        
+      if @fuelings.length > 0
+        html += <<-HTML
+        <table class="fueling-table">
+          <tr class="no_border">
+            <td class="blank">&nbsp;</td>
+            <td class="header"><h5>Odometer</h5></td>
+            <td class="header"><h5>Quantity</h5></td>
+            <td class="header"><h5>Price</h5></td>
+            <td class="header"><h5>Mileage</h5></td>
+            <td class="blank">&nbsp;</td>
+            <td class="blank">&nbsp;</td>
+          </tr>
+        HTML
         
         prev = Fueling.blank
         cons = 0.0
+        first = true
+        alt = false
         @fuelings.each do |f|
           d = TimeHelper.at(f.date)
           if f.fueling_type == Fueling.FUELING_TYPE_FULL
@@ -154,45 +151,63 @@ class  FuelingController < PublicController
             cons = 0.0
           end
           
-          if f.type == Fueling.TYPE_FUELING
-            html += "
-            <tr class='fueling'>
-              <td>#{d.print_date}</td>          	
-            	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
-            	<td>#{h(Double.toString(f.quantity))} l</td>
-            	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
-            	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
-            	<td> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-            	<td> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
-            </tr>"
-          elsif f.type == Fueling.TYPE_COST
-              html += "
-              <tr class='cost'>
-                <td>#{d.print_date}</td>
-              	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
-              	<td>#{f.cost_type_title}</td>
-              	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
-              	<td></td>
-              	<td> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'>Edit</a> </td>
-              	<td> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'>Delete</a> </td>
-              </tr>"
+          if first 
+            first = false  
+            td_class = 'first' 
+          else
+            td_class = ''          
+          end
+
+          if alt 
+            tr_class = 'alt' 
+            alt = false  
+          else
+            tr_class = '' 
+            alt = true 
           end
           
-          prev = f
+          
+            if f.type == Fueling.TYPE_FUELING
+              html += <<-HTML
+              <tr class='fueling #{tr_class}'>
+                <td class="feature #{td_class}">#{d.print_date}</td>          	
+              	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
+              	<td>#{h(Double.toString(f.quantity))} l</td>
+              	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
+              	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
+               	<td class="last #{td_class}"> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
+              	<td class="last #{td_class}"> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+              </tr>
+              HTML
+            elsif f.type == Fueling.TYPE_COST
+                html += <<-HTML
+                <tr class='cost  #{tr_class}'>
+                  <td class="feature #{td_class}">#{d.print_date}</td>
+                	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
+                	<td>#{f.cost_type_title}</td>
+                	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
+                	<td></td>
+                	<td class="last #{td_class}"> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
+                	<td class="last #{td_class}"> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+                </tr>
+                HTML
+            end  
+
+
         end
         html += "</table>"
         null
       else
-        html += "<div> No fueling entries </div>"
+        html += '<div class="notification info" style="width:80%;"> No fuelings or costs </div>'
         null
       end
       html += <<-HTML
       <br />
-      <button class="black small" onclick="document.location.href = '/fueling/new?vehicle=#{params[:vehicle]}'">add fueling</button>
-      <button class="black small" onclick="document.location.href = '/costs_notes/new?vehicle=#{params[:vehicle]}'">add cost/note</button>
+      <a href="/fueling/new?vehicle=#{params[:vehicle]}" class="button blue small">add fueling</a>
+      <a href="/costs_notes/new?vehicle=#{params[:vehicle]}" class="button blue small">add cost/note</a>
       HTML
       
-      html +="<br><br><a  href='/stats?vehicle=#{params[:vehicle]}'>Show stats</a>"
+
       html
       
   end

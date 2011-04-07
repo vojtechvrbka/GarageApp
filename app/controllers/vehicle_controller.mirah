@@ -49,15 +49,62 @@ class  VehicleController < PublicController
       vehicles_tmp = vehicles_tmp.model_id(Long.parseLong(params[:model]))
     end
     
-    if @vehicles = vehicles_tmp.run
-      @empty = false
+    
+    # Pagination
+    # --------------------------------------------------------------------
+    
+    items_per_page = 10
+    if params.has? :page
+      page = Integer.parseInt(params[:page])
     else
-      @empty = true
+      page = 1
     end
+    
+    count = 0
+    vehicles = vehicles_tmp.run
+    vehicles.each do |v|
+      count += 1
+    end
+    pages = int(count/items_per_page)
+    
+    @pagination = '<div class="pagination fr">'
+    if page > 1
+      @pagination += "<a href='?page=#{(page-1)}'>&lt; Prev</a>"
+    end 
+    p = 1
+
+    while p < pages 
+    # <a href="#" class="number">1</a> <a href="#" class="number current">2</a> <span class="dots">...</span> <a href="#" class="number">8</a> <a href="#" class="number">9</a> 
+      current = ( p == page ? 'current' : '' )
+      @pagination += "<a href='?page=#{p}' class='number #{current}'>#{p}</a>"
+      p+=1
+    end
+
+    if page < pages
+       @pagination += "<a href='?page=#{(page+1)}'>Next &gt;</a>"
+    end 
+  
+    @pagination += '</div>'
+    
+    # ----------------------------------------------------------------------------
+   # @vehicles = ArrayList.new
+    @vehicles = vehicles_tmp.limit(items_per_page).offset( (page-1)*items_per_page ).run
+   /*
+    it = 1
+    vehicles.each do |v| 
+      if (page-1)*items_per_page < it and it <= page*items_per_page
+        @vehicles.add(v)
+        puts it
+      end
+      it+=1
+    end
+    */
+    
     list_erb    
   end
   
   def list_erb 
+    
     
     type_select =  Element.select('vehicle_type').
                    option(0, ' All ').
@@ -99,12 +146,13 @@ class  VehicleController < PublicController
         <div id="page-content" class="two-col container_12">
          
     HTML
-    
+    null
 
     
-    if !@empty
+    if true
  
-    @vehicles.each do |vehicle|
+    @vehicles.each do |v|
+      vehicle = Vehicle(v)
       html += <<-HTML
       <div class="grid_4"> <img class="inlinepic" src="/img/tmp/bmw_small.jpg" alt="" /> </div>
             <div class="grid_8">
@@ -137,9 +185,13 @@ class  VehicleController < PublicController
     
     html += <<-HTML
       <br class="cl" />
-      <div class="pagination fr"> <a href="#">&lt; Prev</a> <a href="#" class="number">1</a> <a href="#" class="number current">2</a> <span class="dots">...</span> <a href="#" class="number">8</a> <a href="#" class="number">9</a> <a href="#">Next &gt;</a> </div>
+      #{@pagination}
       <br class="cl" />
     HTML
+    
+    
+    
+    
     
     html += <<-HTML 
           </div>
@@ -175,20 +227,121 @@ class  VehicleController < PublicController
   
   def show
     if @vehicle = Vehicle.get(params.id)
-      @exists = true
+      @fuelings = Fueling.all.vehicle_id(@vehicle.id).sort(:date, true).limit(10).run
+      show_erb
     else
-      @exists = false
+     redirect '/'
+    ""
     end
     
-    show_erb
   end
   
   
   def show_erb
+
+    if @fuelings.length > 0
+ 
+      ftable = <<-HTML
+      <table class="fueling-table">
+        <tr class="no_border">
+          <td class="blank">&nbsp;</td>
+          <td class="header"><h5>Odometer</h5></td>
+          <td class="header"><h5>Quantity</h5></td>
+          <td class="header"><h5>Price</h5></td>
+          <td class="header"><h5>Mileage</h5></td>
+          <td class="blank">&nbsp;</td>
+          <td class="blank">&nbsp;</td>
+        </tr>
+      HTML
+      null
+      first = true
+      alt = false
+         
+      @fuelings.each do |f|
+      #  f = Fueling(f)
+        d = TimeHelper.at(f.date)
+        
+        if f.fueling_type == Fueling.FUELING_TYPE_FULL
+          cons = double(int( (f.quantity / f.trip) * 100 * 100 ))/100  
+        else
+          cons = 0.0
+        end
+        
+        
+        if first 
+          first = false  
+          td_class = 'first' 
+        else
+          td_class = ''          
+        end
+        
+        if alt 
+          tr_class = 'alt' 
+          alt = false  
+        else
+          tr_class = '' 
+          alt = true 
+        end
+        
+        
+        # class="alt"
+        if f.type == Fueling.TYPE_FUELING
+          ftable += <<-HTML
+          <tr class='fueling #{tr_class}'>
+            <td class="feature #{td_class}">#{d.print_date}</td>          	
+          	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
+          	<td>#{h(Double.toString(f.quantity))} l</td>
+          	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
+          	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
+           	<td class="last #{td_class}"> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
+          	<td class="last #{td_class}"> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+          </tr>
+          HTML
+        elsif f.type == Fueling.TYPE_COST
+            ftable += <<-HTML
+            <tr class='cost  #{tr_class}'>
+              <td class="feature #{td_class}">#{d.print_date}</td>
+            	<td>#{f.odometer > 0 ? h(Long.toString(f.odometer) + 'Km') : ''}</td>
+            	<td>#{f.cost_type_title}</td>
+            	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
+            	<td></td>
+            	<td class="#{td_class}"> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
+            	<td class="#{td_class}"> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+            </tr>
+            HTML
+        end  
+        
+      end
+    
+      ftable += "</table>"
+      
+  
+      null
+    else        
+      ftable = '<div class="notification info" style="width:80%;"> No fuelings or costs </div>'
+      null
+    end
+
+    
+
+    if true
+      fadd = <<-HTML
+          <a href="/fueling/?vehicle=#{@vehicle.id}" class="button blue small">show more</a>
+          <a href="/fueling/new?vehicle=#{@vehicle.id}" class="button black small">add fueling</a>
+          <a href="/costs_notes/new?vehicle=#{@vehicle.id}" class="button black small">add cost/note</a>
+      HTML
+    end
+
+
+    
+    
+    html =
     <<-HTML
     <h2 class="ribbon full">#{@vehicle.maker.name} #{@vehicle.model_exact} <span>Owner is <a href="" style="color:white">username</a></span></h2>
         <div class="triangle-ribbon"></div>
         <br class="cl" />
+
+        
         <div class="grid_4">
           <img class="inlinepic" src="/img/tmp/bmw_detail.jpg">
         </div>
@@ -256,16 +409,22 @@ class  VehicleController < PublicController
     <h2 class="ribbon">Fuelings and Costs</h2>
              <div class="triangle-ribbon"></div>
               <br class="cl" />
-
-     <button class="black small" onclick="document.location.href = '/fueling/?vehicle=#{@vehicle.id}'">show more</button>
-     <br class="cl" /><br />
+    #{ftable}
+    
+    <div style="height:40px;">
+    #{fadd}
+    </div>
+     <br class="cl" />
      
     <h2 class="ribbon">Statistics</h2>
              <div class="triangle-ribbon"></div>
               <br class="cl" />
               
-    <button class="black small" onclick="document.location.href = '/stats/?vehicle=#{@vehicle.id}'">show more</button>
+    <div class="notification info" style="width:80%;"> Not enough data </div>
+    <a href="/stats/?vehicle=#{@vehicle.id}" class="button blue small">show more</a>
+              
     HTML
+    
   end
   
   

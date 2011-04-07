@@ -1,4 +1,4 @@
- window.init_data = function(data) {
+jQuery(document).ready(function($) {
 
 //(function() {
   
@@ -34,4 +34,4 @@
     });
   };
 
- };
+ });

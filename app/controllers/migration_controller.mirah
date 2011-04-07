@@ -371,14 +371,14 @@ class MigrationController < MyController
   
   
   def dev_flush_local_data
-    FuelType.all.run.each { |ft| ft.delete()  }
+  #  FuelType.all.run.each { |ft| ft.delete()  }
     Fueling.all.run.each { |f| f.delete()  }
     Note.all.run.each { |ne| ne.delete()  }
     # User.all.run.each { |u| u.delete()  }
     Vehicle.all.run.each { |v| v.delete()  }
     VehicleMaker.all.run.each { |vm| vm.delete()  }
     VehicleModel.all.run.each { |vmo| vmo.delete()  }
-    VehicleType.all.run.each { |vt| vt.delete()  }
+ #   VehicleType.all.run.each { |vt| vt.delete()  }
   end
   
   def dev_fill_data_for_localhost

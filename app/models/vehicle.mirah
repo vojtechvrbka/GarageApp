@@ -7,6 +7,8 @@ import java.util.*
 class Vehicle < Model
   property :user_id,    Integer
   
+
+  
   /* basic */
   property :type,     Integer
   property :maker_id,    Integer

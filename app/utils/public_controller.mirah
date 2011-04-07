@@ -28,7 +28,6 @@ class PublicController < MyController
   def menu_top
     if logged_in?
       SiteMenu.new(params,'nav').
-           item('Homepage', '/').
            item('My garage', '/garage').
            item('My Stats', '/stats').
            item('Vehicles', '/vehicle').to_s
@@ -40,6 +39,14 @@ class PublicController < MyController
     end     
   end
 
+  def breadcrumbs
+    <<-HTML
+    <ul class="breadcrumbs">
+      <li>Template ></li>
+      <li>About Us</li>
+    </ul>
+    HTML
+  end
 
   def before_action
     

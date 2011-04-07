@@ -217,8 +217,10 @@ class  GarageController < PublicController
     <h2 class="ribbon full">My garage </h2>
     <div class="triangle-ribbon"></div>
     <br class="cl" />
-    <div id="page-content" class="two-col container_12">
+
     
+    <div id="page-content" class="two-col container_12">
+
     HTML
     if @logged_in
     
@@ -232,10 +234,11 @@ class  GarageController < PublicController
               <h5 class="inline">Distance: <span style="font-weight:normal;">60 541 Km</span></h5> <br class="cl" />
               <h5 class="inline">Mileage: <span style="font-weight:normal;">8.2 l/100Km</span></h5> <br class="cl" />
               <br />
-              <button class="blue small" onclick="document.location.href = '/vehicle/show/#{vehicle.id}'">Detail</button>
-              <button class="black small" onclick="document.location.href = '/fueling/new?vehicle=#{vehicle.id}'">Add fueling</button>
-              <button class="black small" onclick="document.location.href = '/costs_notes/new?vehicle=#{vehicle.id}'">Add note/cost</button>
-              <button class="black small"  onclick="document.location.href = '/garage/edit/#{vehicle.id}'">Edit</button>
+              <a href="/vehicle/show/#{vehicle.id}" class="button blue small" >Detail</a>
+              <a href="/fueling/new?vehicle=#{vehicle.id}" class="button black small" >Add fueling</a>
+              <a href="/costs_notes/new?vehicle=#{vehicle.id}" class="button black small" >Add note/cost</a>
+              <a href="/garage/edit/#{vehicle.id}" class="button black small" >Edit</a>
+
             <a  href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a>
             <a  href='/stats/?vehicle=#{vehicle.id}'>stats</a>
             </div>

@@ -66,6 +66,11 @@ h2 span {
 	font-size:80%;
 	margin:3px 0 0;
 }
+h2 a,
+h2 a:link,
+h2 a:visited {
+	color:white;
+}
 h3 {
 	font-size:180%;
 	font-weight: bold;
@@ -881,6 +886,78 @@ button.search {
 .pricing-table tbody tr.last td {
 	border-bottom:0 none;
 }
+
+/* pricing table */
+
+.fueling-table h4 {
+	color:#FFFFFF;
+	font-size:240%;
+	margin-bottom:5px;
+}
+.fueling-table h5 {
+	color:#FFFFFF;
+	font-size:140%;
+	margin-bottom:5px;
+}
+.fueling-table .header {
+	background:url(../img/grad-black.gif) repeat-x scroll center top #3B3B3B;
+	border:1px solid #3B3B3B;
+	color:#FFFFFF;
+	text-align:center;
+	width:28%;
+	padding:5px;
+}
+.fueling-table .blank {
+	background:#fff;
+	border:none;
+}
+.fueling-table .feature {
+	border-left:1px solid #3B3B3B;
+}
+.fueling-table .feature.first,
+.fueling-table .last.first {
+	border-top:1px solid #3B3B3B;
+}
+.fueling-table {	
+	border-bottom:1px solid #3B3B3B;
+	width:100%;
+	margin-bottom:20px;
+}
+.fueling-table tr {
+  border-right:1px solid #3B3B3B;
+}
+.fueling-table tr.no_border {
+  border-right:none;
+}
+.fueling-table thead th, .fueling-table thead td {
+	padding:6px 10px;
+	font-weight: 700;
+	color: #333;
+	background: #EAEBFA;
+	border-bottom: 1px solid #3B3B3B;
+	border-right:1px solid #3B3B3B;
+}
+.fueling-table thead th.last, .fueling-table thead td.last {
+	border-right:0;
+}
+.fueling-table tbody th, .fueling-table tbody td {
+	background:#EAEBFA;
+	border-right:1px dotted #D9D9D9;
+	vertical-align:middle;
+	padding:12px;
+	font-size:93%;
+	text-align:center;
+}
+.fueling-table tbody tr.alt td {
+	background:#e4e6fa;
+}
+.fueling-table tbody th.last, .fueling-table tbody td.last {
+	border-right:0 none;
+}
+.fueling-table tbody tr.last td {
+	border-bottom:0 none;
+}
+
 /*////   - Forms -   ////*/
 form {
 	margin-bottom:20px;
@@ -1045,7 +1122,7 @@ button.purple, .button.purple {
 button.purple:hover, .button.purple:hover {
 	background:url("../img/grad-purple-hover.gif") repeat-x center top #166890;
 }
-button.purple:active, .button.blue:active {
+button.purple:active, .button.purple:active {
 	background:url("../img/grad-purple-rev.gif") repeat-x center top #166890;
 }
 /* Black Button */

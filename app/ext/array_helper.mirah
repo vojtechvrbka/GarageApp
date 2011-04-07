@@ -49,7 +49,7 @@ class ArrayHelper
   end
   
   def self.sort(items:List, attribute:String, desc:boolean):void
-    puts "size: #{items.size}"
+    # puts "size: #{items.size}"
     if items == null || (items.size == 0)
       return
     end
@@ -67,7 +67,7 @@ class ArrayHelper
       key = method.invoke(item, null)
       unless list = List(map.get(key))
         map.put(key, list = ArrayList.new)
-        puts key
+      #  puts key
       end
       list.add(item)
     }
