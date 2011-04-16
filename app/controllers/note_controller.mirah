@@ -44,7 +44,7 @@ class  NoteController < PublicController
     
 
     price_currency_select  = Element.select('note[price_currency]').
-                             option("USD", "USD").
+                            # option("USD", "USD").
                              option("EUR", "EUR").
                              value(@fueling.price_currency)
     price_currency_select.class(:small2)                         

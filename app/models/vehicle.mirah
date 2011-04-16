@@ -32,6 +32,9 @@ class Vehicle < Model
   property :note, String
   property :deleted, Boolean
   
+  property :spritmonitor_id, Integer
+  
+  
   def id
     key.getId
   end

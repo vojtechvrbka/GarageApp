@@ -39,6 +39,26 @@ class PublicController < MyController
     end     
   end
 
+  def menu_bottom
+    if logged_in?
+      <<-HTML
+      <ul class="footer-nav">
+        <li><a href="/garage">My garage</a> |</li>
+        <li><a href="/stats">My stats</a> |</li>
+        <li><a href="/vehicle">Vehicles</a></li>
+      </ul>      
+      HTML
+         
+    else
+      <<-HTML
+      <ul class="footer-nav">
+        <li><a href="/">Homepage</a> |</li>
+        <li><a href="/vehicle">Vehicles</a></li>
+      </ul>      
+      HTML
+    end     
+  end
+
   def breadcrumbs
     <<-HTML
     <ul class="breadcrumbs">

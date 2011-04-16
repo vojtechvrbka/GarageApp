@@ -17,6 +17,19 @@ class MigrationController < MyController
     list
   end
   
+  def dev_setting
+    if st = Setting.all.first
+      st.spritmonitor = st.spritmonitor+1
+      st.save
+    else
+      st = Setting.new
+      st.spritmonitor = 1
+      st.save
+    end
+    
+    return st.spritmonitor
+  end
+  
   def list
     html = '<h1>Available migrations</h1><ul>'
     getClass().getDeclaredMethods.each { |method|
@@ -40,14 +53,14 @@ class MigrationController < MyController
   end
   
   def dev_import_spritmonitor
-    from = 178002
+    from = 100001
 /*
     200.times { 
       import_vehicle(from)
       from += 1
     }
 */    
-    from = 178002
+    from = 124202
     import_vehicle(from)
     "jo"
   end
@@ -61,7 +74,6 @@ class MigrationController < MyController
     rescue 
       return "false"
     end
-
 
     # Ford - Focus - Focus II Turnier 1.6 TDCi
     # Diesel, year 2006, 66 kW (90 PS), manual User: ralf1982 - f?hrt immer mit Abblendlicht - im Sommer Alufelgen mit Michelin Energy Safer 195/65 R15
@@ -77,6 +89,7 @@ class MigrationController < MyController
 
       vehicle = Vehicle.new
       vehicle.type = Vehicle.TYPE_AUTOMOBILE
+      vehicle.spritmonitor_id = sprit_id
       
       # vyrobce
       if make = VehicleMaker.all.name(titles[0].trim).first
@@ -151,13 +164,8 @@ class MigrationController < MyController
       
       vehicle.save
 
-      puts "h1"
-      puts h1
-      puts "details"
-      puts info
-      puts "-------"
       i = 1
-      10.times {
+      20.times {
         if !import_fuelings(url+"?page="+Integer.toString(i), vehicle.id)
           break
         end
@@ -211,7 +219,7 @@ class MigrationController < MyController
             f.odometer = Integer.parseInt(col.text.replace('.',''))
             null
           else
-            f.fueling_type = Fueling.FUELING_TYPE_INVALID
+          #  f.fueling_type = Fueling.FUELING_TYPE_INVALID
             null
           end
           null
@@ -220,7 +228,7 @@ class MigrationController < MyController
             f.trip = int(Double.parseDouble(col.text.replace('.','').replace(',','.')))
             null
           else
-            f.fueling_type = Fueling.FUELING_TYPE_INVALID
+        #    f.fueling_type = Fueling.FUELING_TYPE_INVALID
             null
           end
           null
@@ -289,6 +297,16 @@ class MigrationController < MyController
           #if f.fueling_type == Fueling.FUELING_TYPE_INVALID
           #  f.fueling_type = Fueling.FUELING_TYPE_FIRST
           #end
+           if img = col.getElementsByTag('img').first             
+              if img.attr('src').equals('pics/vdetail/fueling_first.png')
+                f.fueling_type = Fueling.FUELING_TYPE_FIRST
+              elsif img.attr('src').equals('pics/vdetail/fueling_invalid.png')
+                f.fueling_type = Fueling.FUELING_TYPE_INVALID
+              elsif img.attr('src').equals('pics/vdetail/fueling_notfull.png')
+                f.fueling_type = Fueling.FUELING_TYPE_PARTLY_FULL
+              end             
+           end
+          
           null
         elsif col.attr('class').equals('costname') and !col.text.trim.equals('')
           cost = col.text.trim

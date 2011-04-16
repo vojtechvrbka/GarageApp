@@ -255,15 +255,11 @@ class SiteController < PublicController
           #{content}
           <br class="cl" />
         </div>
+        
         <!-- footer Start -->
         <footer>
-          <ul class="footer-nav">
-            <li><a href="index.html">Home</a> |</li>
-            <li><a href="about.html">About</a> |</li>
-            <li><a href="portfolio.html">Portfolio</a> |</li>
-            <li><a href="services.html">Services</a> |</li>
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
+          #{menu_bottom}
+          
           <p>Copyright &copy; <a href="http://www.garageapp.me">GarageApp.me</a>, 2011</p>
           <br class="cl" />
         </footer>

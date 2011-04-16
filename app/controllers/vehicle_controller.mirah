@@ -3,7 +3,8 @@ import ext.*
 import models.*
 import utils.*
 
-import java.util.ArrayList
+
+import java.util.*
 
 class  VehicleController < PublicController
   
@@ -160,10 +161,10 @@ class  VehicleController < PublicController
               <h5 class="inline">Distance: <span style="font-weight:normal;">60 541 Km</span></h5> <br class="cl" />
               <h5 class="inline">Mileage: <span style="font-weight:normal;">8.2 l/100Km</span></h5> <br class="cl" />
               <br />
-              <button class="blue small" onclick="document.location.href = '/vehicle/show/#{vehicle.id}'">Detail</button>
-              <button class="black small" onclick="document.location.href = '/fueling/?vehicle=#{vehicle.id}'">fueling entries</button>
-              <button class="black small" onclick="document.location.href = '/stats/?vehicle=#{vehicle.id}'">stats</button>
-              <button class="black small"  onclick="document.location.href = '/garage/edit/#{vehicle.id}'">Edit</button>
+              <a class="button blue small" href='/vehicle/show/#{vehicle.id}'>Detail</a>
+              <a class="button black small" href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a>
+              <a class="button black small" href='/stats/?vehicle=#{vehicle.id}'>stats</a>
+              <a class="button black small"  href='/garage/edit/#{vehicle.id}'>Edit</a>
 
             </div>
             <br class="cl" />
@@ -293,8 +294,8 @@ class  VehicleController < PublicController
           	<td>#{h(Double.toString(f.quantity))} l</td>
           	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
           	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
-           	<td class="last #{td_class}"> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
-          	<td class="last #{td_class}"> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+           	<td class="last #{td_class}"> <a href='/fueling/edit/#{f.id}?vehicle=#{@vehicle.id}'><img class="tooltip" title="Edit" src="/img/edit.png" /></a> </td>
+          	<td class="last #{td_class}"> <a href='/fueling/remove/#{f.id}?vehicle=#{@vehicle.id}'><img class="tooltip" title="Delete" src="/img/delete.png" /></a> </td>
           </tr>
           HTML
         elsif f.type == Fueling.TYPE_COST
@@ -305,8 +306,8 @@ class  VehicleController < PublicController
             	<td>#{f.cost_type_title}</td>
             	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
             	<td></td>
-            	<td class="#{td_class}"> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
-            	<td class="#{td_class}"> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+            	<td class="#{td_class}"> <a href='/costs_notes/edit/#{f.id}?vehicle=#{@vehicle.id}'><img class="tooltip" title="Edit" src="/img/edit.png" /></a> </td>
+            	<td class="#{td_class}"> <a href='/costs_notes/remove/#{f.id}?vehicle=#{@vehicle.id}'><img class="tooltip" title="Delete" src="/img/delete.png" /></a> </td>
             </tr>
             HTML
         end  
@@ -333,7 +334,63 @@ class  VehicleController < PublicController
     end
 
 
+
+
+      @fuelings = Fueling.all.vehicle_id(@vehicle.id).type(Fueling.TYPE_FUELING).sort(:date).run
+          
+      min_time = long(0); max_time = long(0)
+      first = true
+      @fuelings.each do |f|
+        if first # prvni zaznam
+          min_time = f.date
+          first = false
+        end
+        if min_time > f.date
+          min_time = f.date
+        end
+        if max_time < f.date
+          max_time = f.date
+        end
+      end 
+            
+      fueling_list = ArrayList.new
+      @fuelings.each{ |f| fueling_list.add(f)   }
+      months = ArrayHelper.group(fueling_list, :month)
+      @months_avg = LinkedHashMap.new
+
+      months.keys.each do |k|
+        sum=0.0; count=0;price = 0.0;
+        ArrayList(months.get(k)).each do |it|
+          if Fueling(it).type == Fueling.TYPE_FUELING and Fueling(it).fueling_type == Fueling.FUELING_TYPE_FULL
+            count += 1
+            sum += ( Fueling(it).quantity / Fueling(it).trip) * 100
+          end
+          price += Fueling(it).price
+        @months_avg.put(k ,Double.new(sum/count))
+        end
+      end
+
+
+    rows = ""
     
+    i=0
+    @months_avg.keys.each do |k|
+      it = @months_avg.get(k)
+
+      month = TimeHelper.at_month_of_epoch(Integer(k)).month_print
+      rows += "['#{month}',"+ Double.toString(double(int(Double(it).doubleValue*100))/100) + "],"
+      i+=1
+    end
+    
+    
+    if TimeHelper.at(min_time).month_of_epoch+2 >= TimeHelper.at(max_time).month_of_epoch
+      chart_div = '<div class="notification info" style="width:80%;"> Not enough data </div>'
+    else
+      chart_div = <<-HTML
+      <div id="chart_div"></div>      
+      <a href="/stats/?vehicle=#{@vehicle.id}" class="button blue small">show more</a>
+      HTML
+    end
     
     html =
     <<-HTML
@@ -349,6 +406,7 @@ class  VehicleController < PublicController
           <strong>Make</strong> <span>#{@vehicle.maker.name}</span><br />
           <strong>Model</strong> <span>#{@vehicle.model_exact}</span><br />
           <strong>Fuel type</strong> <span>#{@vehicle.fuel_type_title}</span><br />
+          <strong>Year</strong> <span>#{@vehicle.year}</span><br />
           <br />
           <strong>Gearing type</strong> <span>#{@vehicle.gearing_title}</span><br />
           <strong>Engine power</strong> <span>#{@vehicle.engine_power} kW</span><br />
@@ -358,19 +416,14 @@ class  VehicleController < PublicController
         </div>
     
     <br class="cl" /><br />
-    
+    <!-- 
     <h2 class="ribbon">Gallery</h2>
         <div class="triangle-ribbon"></div>
          <br class="cl" />
-
-         <!-- "previous page" action -->
+         
          <a class="prev browse left"></a>
-         <div id="browsable" class="scrollable">   
-
-            <!-- root element for the items -->
+         <div id="browsable" class="scrollable">            
             <div class="items">
-
-               <!-- 1-5 -->
                <div>
                   <img src="/img/screenshots/buttons.jpg" height="100" width="100" alt="" />
                      <img src="/img/screenshots/gallery.jpg" height="100" width="100" alt="" />
@@ -378,8 +431,6 @@ class  VehicleController < PublicController
                      <img src="/img/screenshots/charts.jpg" height="100" width="100" alt="" />
                      <img src="/img/screenshots/coding.jpg" height="100" width="100" alt="" />
                </div>
-
-               <!-- 5-10 -->
                <div>
                   <img src="/img/screenshots/docs.jpg" height="100" width="100" alt="" />
                      <img src="/img/screenshots/forms.jpg" height="100" width="100" alt="" />
@@ -387,8 +438,6 @@ class  VehicleController < PublicController
                      <img src="/img/screenshots/notifications.jpg" height="100" width="100" alt="" />
                      <img src="/img/screenshots/pagination.jpg" height="100" width="100" alt="" />
                </div>
-
-               <!-- 10-15 -->
                <div>
                   <img src="/img/screenshots/psd.jpg" height="100" width="100" alt="" />
                      <img src="/img/screenshots/switches.jpg" height="100" width="100" alt="" />
@@ -396,16 +445,12 @@ class  VehicleController < PublicController
                      <img src="/img/screenshots/themes.jpg" height="100" width="100" alt="" />
                      <img src="/img/screenshots/tips.jpg" height="100" width="100" alt="" />
                </div>
-
             </div>
-
          </div>
-         <!-- "next page" action -->
          <a class="next browse right"></a>
 
-
          <br class="cl" /><br />
-
+        -->
     <h2 class="ribbon">Fuelings and Costs</h2>
              <div class="triangle-ribbon"></div>
               <br class="cl" />
@@ -419,9 +464,40 @@ class  VehicleController < PublicController
     <h2 class="ribbon">Statistics</h2>
              <div class="triangle-ribbon"></div>
               <br class="cl" />
+     
+     
+     
+     
+              #{chart_div}
               
-    <div class="notification info" style="width:80%;"> Not enough data </div>
-    <a href="/stats/?vehicle=#{@vehicle.id}" class="button blue small">show more</a>
+     
+               <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+                    <script type="text/javascript">
+                      google.load("visualization", "1", {packages:["corechart"]});
+                      google.setOnLoadCallback(drawChart);
+
+                      function drawChart() {
+                        var data = new google.visualization.DataTable();
+
+                        data.addColumn('string', 'Months');
+                        data.addColumn('number', 'Mine');
+
+                        data.addRows([
+                          #{rows}
+                        ]);
+
+                        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+                        chart.draw(data, {width: 800, height: 360, 
+                                          hAxis: {title: 'Months', titleTextStyle: {color: '#FF0000'}},
+                                          vAxis: {title: 'l / 100 Km', titleTextStyle: {color: '#FF0000'}},
+                                          chartArea:{left:60,top:5,width:"100%",height:"70%"}
+
+                                         });
+                      }
+                    </script>
+     
+              
+    
               
     HTML
     

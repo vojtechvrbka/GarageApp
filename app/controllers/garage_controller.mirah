@@ -239,8 +239,6 @@ class  GarageController < PublicController
               <a href="/costs_notes/new?vehicle=#{vehicle.id}" class="button black small" >Add note/cost</a>
               <a href="/garage/edit/#{vehicle.id}" class="button black small" >Edit</a>
 
-            <a  href='/fueling/?vehicle=#{vehicle.id}'>fueling entries</a>
-            <a  href='/stats/?vehicle=#{vehicle.id}'>stats</a>
             </div>
             <br class="cl" />
             <br />  

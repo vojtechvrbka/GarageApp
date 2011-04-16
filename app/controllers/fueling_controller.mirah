@@ -13,9 +13,9 @@ class  FuelingController < PublicController
    
     if @vehicle = Vehicle.get(vehicle_id)  
     #  if Vehicle.get(vehicle_id).user_id == user.id
-        if @fuelings = Fueling.all.vehicle_id(vehicle_id).sort(:date).run
+        if @fuelings = Fueling.all.vehicle_id(vehicle_id).sort(:date, true).run
                         
-          fuelings = Fueling.all.vehicle_id(@vehicle.id).sort(:date).run
+          fuelings = Fueling.all.vehicle_id(@vehicle.id).sort(:date, true).run
           prev = Fueling.blank
           count = 0
           sum = 0.0
@@ -166,8 +166,7 @@ class  FuelingController < PublicController
             alt = true 
           end
           
-          
-            if f.type == Fueling.TYPE_FUELING
+          if f.type == Fueling.TYPE_FUELING
               html += <<-HTML
               <tr class='fueling #{tr_class}'>
                 <td class="feature #{td_class}">#{d.print_date}</td>          	
@@ -175,8 +174,8 @@ class  FuelingController < PublicController
               	<td>#{h(Double.toString(f.quantity))} l</td>
               	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
               	<td>#{ cons > 0 ? h(Double.toString(cons))+' l/100 Km' : ''}</td>
-               	<td class="last #{td_class}"> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
-              	<td class="last #{td_class}"> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+               	<td class="last #{td_class}"> <a href='/fueling/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img class="tooltip" title="Edit" src="/img/edit.png" /></a> </td>
+              	<td class="last #{td_class}"> <a href='/fueling/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img class="tooltip" title="Delete" src="/img/delete.png" /></a> </td>
               </tr>
               HTML
             elsif f.type == Fueling.TYPE_COST
@@ -187,12 +186,11 @@ class  FuelingController < PublicController
                 	<td>#{f.cost_type_title}</td>
                 	<td>#{h(Double.toString(f.price))} #{f.price_currency}</td>
                 	<td></td>
-                	<td class="last #{td_class}"> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/edit.png" /></a> </td>
-                	<td class="last #{td_class}"> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img src="/img/delete.png" /></a> </td>
+                	<td class="#{td_class}"> <a href='/costs_notes/edit/#{f.id}?vehicle=#{params[:vehicle]}'><img class="tooltip" title="Edit" src="/img/edit.png" /></a> </td>
+                	<td class="#{td_class}"> <a href='/costs_notes/remove/#{f.id}?vehicle=#{params[:vehicle]}'><img class="tooltip" title="Delete" src="/img/delete.png" /></a> </td>
                 </tr>
                 HTML
-            end  
-
+            end
 
         end
         html += "</table>"
@@ -223,15 +221,15 @@ class  FuelingController < PublicController
                                       
     fuel_unit_select = Element.select('fueling[quantity_unit]').
                              option("l", "l").
-                             option("g_us", "Gallon (US)").
-                             option("g_imp", "Gallon (Imperial)").
+                     #        option("g_us", "Gallon (US)").
+                    #         option("g_imp", "Gallon (Imperial)").
                              value(@fueling.quantity_unit)
     fuel_unit_select.class(:small2)
                              
     price_currency_select  = Element.select('fueling[price_currency]').
-                             option("USD", "USD").
+                    #         option("USD", "USD").
                              option("EUR", "EUR").
-                             option("KC", "Kč").
+                    #         option("KC", "Kč").
                              value(@fueling.price_currency)
     price_currency_select.class(:small2)
               

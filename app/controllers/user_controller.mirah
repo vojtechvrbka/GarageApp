@@ -97,7 +97,9 @@ class UserController < SiteController
         </p>
       </form>
     <br style="clear:both;" />
-    <a href="/user/register">Don't have a GarageApp account? Click here to sign up!</a> 
+    <div style="text-align:center;">
+      <a href="/user/signup">Don't have a GarageApp account? Click here to sign up!</a> 
+    </div>
     HTML
   end
   

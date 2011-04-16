@@ -275,13 +275,8 @@ class MyController < HttpServlet
   end 
   
   def doPost(request, response):void
-    if request.getContentType.equals("application/coffee-pot-command")
-      response.setStatus(418, "I'm a teapot")
-      nil
-    else
-      doGet(request, response)
-      nil
-    end
+    doGet(request, response)
+    nil
   end     
   
   def reply(kind:String, message:String)

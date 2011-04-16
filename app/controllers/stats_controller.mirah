@@ -21,6 +21,11 @@ class  StatsController < PublicController
 #    @vehicle = Vehicle.all.user_id(user.id).deleted(false).first
     html = ""
     
+    
+    if params.has? :send and params.has? :filter_from
+      redirect '/stats/?vehicle='+params[:vehicle]+'&filter_from='+params[:filter_from]+'&filter_to='+params[:filter_to]
+    end
+    
  
     if @fuelings = Fueling.all.vehicle_id(@vehicle.id).sort(:date).run
 
@@ -50,6 +55,19 @@ class  StatsController < PublicController
       
       prev = f
     end
+   
+   puts 'month'
+   puts TimeHelper.at(min_time).month_of_epoch
+   puts TimeHelper.at(max_time).month_of_epoch
+   
+   if TimeHelper.at(min_time).month_of_epoch+2 >= TimeHelper.at(max_time).month_of_epoch
+     return <<-HTML
+     <h2 class="ribbon full">Stats of  <a href="/vehicle/show/#{@vehicle.id}" >#{@vehicle.maker.name} #{@vehicle.model_exact}</a> </h2>
+         <div class="triangle-ribbon"></div>
+         <br class="cl" />
+     <div class="notification info" style="width:80%;"> Not enough data </div>
+     HTML
+   end
    
     th = TimeHelper.new
     
@@ -331,7 +349,7 @@ class  StatsController < PublicController
             chart.draw(data, {width: 800, height: 360, 
                               hAxis: {title: 'Months', titleTextStyle: {color: '#FF0000'}},
                               vAxis: {title: 'l / 100 Km', titleTextStyle: {color: '#FF0000'}},
-                              chartArea:{left:50,top:5,width:"100%",height:"70%"}
+                              chartArea:{left:60,top:5,width:"100%",height:"70%"}
                               
                              });
           }
@@ -348,7 +366,7 @@ class  StatsController < PublicController
             chart.draw(data, {width: 800, height: 340, isStacked:true,
                               hAxis: {title: 'Months', titleTextStyle: {color: '#FF0000'}},
                               vAxis: {title: 'EUR', titleTextStyle: {color: '#FF0000'}},
-                              legend:'bottom',lineWidth:0, chartArea:{left:50,top:5,width:"100%",height:"70%"}
+                              legend:'bottom',lineWidth:0, chartArea:{left:60,top:5,width:"100%",height:"70%"}
                              });
           }
          
@@ -369,12 +387,13 @@ class  StatsController < PublicController
       	</style> 
 
 
-        <h2 class="ribbon full">Stats of  <a href="/vehicle/show/#{@vehicle.id}" >#{@vehicle.maker.name} #{@vehicle.model_exact}</a> <span>Owner is <a href="" style="color:white">username</a></span></h2>
+        <h2 class="ribbon full">Stats of  <a href="/vehicle/show/#{@vehicle.id}" >#{@vehicle.maker.name} #{@vehicle.model_exact}</a> </h2>
             <div class="triangle-ribbon"></div>
             <br class="cl" />
  
 
         <form action="" method="post" class="stats_filter"> 
+            <input type="hidden" name="send" value="1">
         		<fieldset style="height:120px;"> 
         			<label for="valueA">Between</label> 
               #{@date_select_from}
@@ -384,11 +403,12 @@ class  StatsController < PublicController
         		<button class="" type="submit">  Filter  </button>
         	</form>
       
+      <!-- 
       <br class="cl" />  	
       <h2 class="ribbon ">Basic</h2>
         <div class="triangle-ribbon"></div>
         <br class="cl" />
-        
+      -->  
         <!-- 
         <ul class="sidebar-nav" style="float:right;width:260px;">
                <li class="first"><a href="#">About Us</a></li>
@@ -396,10 +416,12 @@ class  StatsController < PublicController
                <li><a href="#">The Team</a></li>
         </ul>
         -->
+        
+      <!--   
         <strong>Price per month</strong> #{@month_price} EUR<br />
         <strong>Price per km</strong> #{@km_price} EUR <br />
         <br />
-        
+      -->  
         
     <br class="cl" />    
     <h2 class="ribbon ">Consumption</h2>

@@ -23,3 +23,8 @@ handlers:
   - url: /migrate/*
     servlet: controllers.MigrationController
     name: migrate
+    
+  - url: /task/*
+    servlet: controllers.TaskController
+    name: task
+    login: admin
